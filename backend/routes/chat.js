@@ -282,4 +282,44 @@ router.post("/", async (req, res) => {
   }
 });
 
+router.get("/:conversationId", async (req, res) => {
+  try {
+    const { conversationId } = req.params;
+    const conversation = await prisma.conversation.findUnique({
+      where: { id: conversationId },
+      include: { store: true },
+    });
+    if (!conversation) {
+      return res.status(404).json({ error: "Conversation not found" });
+    }
+
+    const processedMessages = [];
+    const items = Array.isArray(conversation.messages) ? conversation.messages : [];
+
+    for (const msg of items) {
+      if (msg.role === "assistant") {
+        const { products: parsedProducts, cleanText } = extractAndStripProducts(msg.content);
+        const products = buildProductCards(conversation.store, parsedProducts);
+        processedMessages.push({
+          role: "assistant",
+          content: cleanText || msg.content,
+          products: products || [],
+        });
+      } else {
+        processedMessages.push(msg);
+      }
+    }
+
+    return res.json({
+      id: conversation.id,
+      visitorName: conversation.visitorName,
+      visitorEmail: conversation.visitorEmail,
+      messages: processedMessages,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Unable to retrieve conversation" });
+  }
+});
+
 export default router;

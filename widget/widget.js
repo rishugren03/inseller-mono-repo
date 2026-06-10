@@ -40,6 +40,8 @@
     .ins-window-title .ins-online { color: var(--ins-text-on-accent, #ffffff); font-size: 0.82rem; margin-top: 5px; opacity: 0.85; }
     .ins-close-button { width: 34px; height: 34px; border:none; border-radius: 8px; background: rgba(255,255,255,0.1); color: var(--ins-text-on-accent, #ffffff); cursor:pointer; font-size: 1.35rem; line-height: 1; }
     .ins-close-button:hover { background: rgba(255,255,255,0.18); }
+    .ins-reset-button { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border:none; border-radius: 8px; background: rgba(255,255,255,0.1); color: var(--ins-text-on-accent, #ffffff); cursor:pointer; }
+    .ins-reset-button:hover { background: rgba(255,255,255,0.18); }
     .ins-messages { flex:1; padding: 18px; overflow-y:auto; display:flex; flex-direction:column; gap: 12px; background: #f8fafc; }
     .ins-message { max-width: 84%; padding: 12px 14px; border-radius: 14px; line-height: 1.5; font-size: 0.94rem; overflow-wrap: anywhere; box-shadow: 0 1px 2px rgba(17,24,39,0.04); }
     .ins-agent, .ins-assistant { align-self: flex-start; background: #ffffff; color: #111827; border: 1px solid #e5e7eb; border-bottom-left-radius: 4px; }
@@ -108,7 +110,12 @@
             <span class="ins-online">● online</span>
           </div>
         </div>
-        <button type="button" class="ins-close-button">×</button>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <button type="button" class="ins-reset-button" title="Start new conversation">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          </button>
+          <button type="button" class="ins-close-button" title="Close chat">×</button>
+        </div>
       </div>
       <div class="ins-messages"></div>
       <div class="ins-input-row">
@@ -125,14 +132,14 @@
   const windowEl = root.querySelector(".ins-window");
   const titleEl = root.querySelector(".ins-window-title strong");
   const labelEl = root.querySelector(".ins-pill-label");
+  const resetBtn = root.querySelector(".ins-reset-button");
   const closeBtn = root.querySelector(".ins-close-button");
   const messagesEl = root.querySelector(".ins-messages");
   const input = root.querySelector(".ins-input-row input");
   const sendBtn = root.querySelector(".ins-input-row button");
 
   let state = {
-    conversationId:
-      sessionStorage.getItem(`inseller-${storeId}-conversation`) || null,
+    conversationId: null,
     visitorName: null,
     visitorEmail: null,
     contactShown: false,
@@ -349,16 +356,68 @@
       titleEl.textContent = data.botName || "Inseller";
       labelEl.textContent = data.botName || "Inseller";
       setAccent(data.themeColor);
-      setTimeout(
-        () =>
-          addMessage(
-            "assistant",
-            data.greeting || "Hey! How can I help you today?",
-          ),
-        1000,
-      );
+
+      const greetingMsg = data.greeting || "Hey! How can I help you today?";
+
+      let hasHistory = false;
+      const storedConv = localStorage.getItem(`inseller-${storeId}-conversation`);
+      if (storedConv) {
+        try {
+          const { id, timestamp } = JSON.parse(storedConv);
+          // Check if within 7 days
+          if (Date.now() - timestamp < 7 * 24 * 60 * 60 * 1000) {
+            const chatRes = await fetch(`${apiBase}/chat/${id}`);
+            if (chatRes.ok) {
+              const chatData = await chatRes.json();
+              state.conversationId = chatData.id;
+              state.visitorName = chatData.visitorName;
+              state.visitorEmail = chatData.visitorEmail;
+              state.contactShown = !!(chatData.visitorName || chatData.visitorEmail);
+
+              if (chatData.messages && chatData.messages.length > 0) {
+                hasHistory = true;
+                chatData.messages.forEach((msg) => {
+                  if (msg.role === "user") {
+                    addMessage("user", msg.content);
+                  } else if (msg.role === "assistant") {
+                    addMessage("assistant", msg.content);
+                    if (msg.products && msg.products.length > 0) {
+                      addProductCards(msg.products);
+                    }
+                  }
+                });
+              }
+            } else {
+              localStorage.removeItem(`inseller-${storeId}-conversation`);
+            }
+          } else {
+            localStorage.removeItem(`inseller-${storeId}-conversation`);
+          }
+        } catch (e) {
+          console.error("Error restoring history", e);
+        }
+      }
+
+      if (!hasHistory) {
+        setTimeout(
+          () => addMessage("assistant", greetingMsg),
+          1000,
+        );
+      }
+
       pill.addEventListener("click", () => animateOpen(true));
       closeBtn.addEventListener("click", () => animateOpen(false));
+
+      resetBtn.addEventListener("click", () => {
+        localStorage.removeItem(`inseller-${storeId}-conversation`);
+        state.conversationId = null;
+        state.contactShown = false;
+        state.waiting = false;
+        state.isInquiryResponse = false;
+        messagesEl.innerHTML = "";
+        addMessage("assistant", greetingMsg);
+      });
+
       sendBtn.addEventListener("click", submitMessage);
       input.addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
@@ -407,9 +466,9 @@
       if (!response.ok) throw new Error(data.error || "Chat request failed");
 
       state.conversationId = data.conversationId;
-      sessionStorage.setItem(
+      localStorage.setItem(
         `inseller-${storeId}-conversation`,
-        data.conversationId,
+        JSON.stringify({ id: data.conversationId, timestamp: Date.now() }),
       );
 
       messagesEl.removeChild(typing);
