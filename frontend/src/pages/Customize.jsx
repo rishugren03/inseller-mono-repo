@@ -7,7 +7,7 @@ const PRESET_COLORS = [
 ];
 
 export default function Customize() {
-  const [storeId] = useState(localStorage.getItem("insellerStoreId") || "");
+  const [storeId, setStoreId] = useState(localStorage.getItem("insellerStoreId") || "");
   const [settings, setSettings] = useState({
     botName: "",
     greeting: "",
@@ -23,15 +23,31 @@ export default function Customize() {
     : `<script src="https://your-backend.com/widget.js" data-store-id="STORE_ID"></script>`;
 
   useEffect(() => {
-    if (!storeId) return;
-    fetchJson(`/api/widget-config/${storeId}`)
-      .then((data) => {
-        setSettings((prev) => ({ ...prev, ...data }));
+    setLoading(true);
+    fetchJson("/api/store")
+      .then((store) => {
+        if (store) {
+          setStoreId(store.id);
+          setSettings({
+            botName: store.botName || "",
+            greeting: store.greeting || "",
+            themeColor: store.themeColor || "#FF6B2C",
+            brevoSender: store.brevoSender || "",
+          });
+          localStorage.setItem("insellerStoreId", store.id);
+        } else {
+          setStoreId("");
+          localStorage.removeItem("insellerStoreId");
+        }
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error("Failed to load store settings:", err);
         setStatus({ type: "error", message: "Unable to load store settings." });
+      })
+      .finally(() => {
+        setLoading(false);
       });
-  }, [storeId]);
+  }, []);
 
   const handleSave = async () => {
     if (!storeId) {

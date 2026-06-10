@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { NavLink, Route, Routes, Navigate } from "react-router-dom";
+import { NavLink, Route, Routes, Navigate, useLocation } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Inbox from "./pages/Inbox";
 import Customize from "./pages/Customize";
@@ -12,6 +12,8 @@ import { fetchJson } from "./lib/api";
 function App() {
   const { initializing, isAuthenticated, user } = useAuth();
   const [loadingStore, setLoadingStore] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -20,14 +22,25 @@ function App() {
         .then((store) => {
           if (store?.id) {
             localStorage.setItem("insellerStoreId", store.id);
+          } else {
+            localStorage.removeItem("insellerStoreId");
           }
         })
-        .catch((err) => console.error("Failed to fetch store info", err))
+        .catch((err) => {
+          console.error("Failed to fetch store info", err);
+          localStorage.removeItem("insellerStoreId");
+        })
         .finally(() => setLoadingStore(false));
     } else {
+      localStorage.removeItem("insellerStoreId");
       setLoadingStore(false);
     }
   }, [isAuthenticated]);
+
+  // Close sidebar on path change (mobile)
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [location.pathname]);
 
   if (initializing || loadingStore) {
     return (
@@ -43,8 +56,33 @@ function App() {
   }
 
   return (
-    <div className="app-shell">
-      <aside className="dashboard-sidebar">
+    <div className={`app-shell ${sidebarOpen ? "sidebar-drawer-active" : ""}`}>
+      {/* Mobile Header */}
+      <header className="mobile-header">
+        <button
+          type="button"
+          className="hamburger-btn"
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          aria-label="Toggle Navigation"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            {sidebarOpen ? (
+              <path d="M18 6L6 18M6 6l12 12" />
+            ) : (
+              <path d="M3 12h18M3 6h18M3 18h18" />
+            )}
+          </svg>
+        </button>
+        <div className="brand-mark">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--accent)" }}><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+          Inseller
+        </div>
+      </header>
+
+      {/* Backdrop overlay for mobile drawer */}
+      {sidebarOpen && <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />}
+
+      <aside className={`dashboard-sidebar ${sidebarOpen ? "open" : ""}`}>
         <div className="brand">
           <div className="brand-mark">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--accent)" }}><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
