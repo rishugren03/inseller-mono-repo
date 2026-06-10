@@ -45,6 +45,7 @@ model Conversation {
   visitorName  String?
   messages     Json
   emailSent    Boolean  @default(false)
+  takenOver    Boolean  @default(false)
   createdAt    DateTime @default(now())
 
   @@index([storeId])

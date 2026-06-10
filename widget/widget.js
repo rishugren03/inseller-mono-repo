@@ -164,13 +164,60 @@
     root.style.setProperty("--ins-text-on-accent", getContrastColor(bg));
   }
 
+  let pollInterval = null;
+
+  function renderMessages(messages) {
+    messagesEl.innerHTML = "";
+    state.messageCount = messages.length;
+    messages.forEach((msg) => {
+      if (msg.role === "user") {
+        addMessage("user", msg.content);
+      } else if (msg.role === "assistant") {
+        addMessage("assistant", msg.content);
+        if (msg.products && msg.products.length > 0) {
+          addProductCards(msg.products, !!msg.isInquiry);
+        }
+      }
+    });
+  }
+
+  function startPolling() {
+    if (pollInterval) return;
+    pollInterval = setInterval(async () => {
+      if (!state.conversationId || state.waiting) return;
+      try {
+        const chatRes = await fetch(`${apiBase}/chat/${state.conversationId}`);
+        if (chatRes.ok) {
+          const chatData = await chatRes.json();
+          const newMessages = chatData.messages || [];
+          state.takenOver = !!chatData.takenOver;
+
+          if (newMessages.length > (state.messageCount || 0)) {
+            renderMessages(newMessages);
+          }
+        }
+      } catch (e) {
+        console.error("Widget polling error", e);
+      }
+    }, 4000);
+  }
+
+  function stopPolling() {
+    if (pollInterval) {
+      clearInterval(pollInterval);
+      pollInterval = null;
+    }
+  }
+
   function animateOpen(open) {
     if (open) {
       windowEl.classList.add("open");
       windowEl.setAttribute("aria-hidden", "false");
+      startPolling();
     } else {
       windowEl.classList.remove("open");
       windowEl.setAttribute("aria-hidden", "true");
+      stopPolling();
     }
   }
 
@@ -232,11 +279,11 @@
       img.alt = product.title || "Product Image";
       img.loading = "lazy";
       img.onerror = () => {
-        imgContainer.innerHTML = '<span class="ins-product-image-fallback">🛍</span>';
+        imgContainer.innerHTML = '<span class="ins-product-image-fallback"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg></span>';
       };
       imgContainer.appendChild(img);
     } else {
-      imgContainer.innerHTML = '<span class="ins-product-image-fallback">🛍</span>';
+      imgContainer.innerHTML = '<span class="ins-product-image-fallback"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg></span>';
     }
     card.appendChild(imgContainer);
 
@@ -373,19 +420,11 @@
               state.visitorName = chatData.visitorName;
               state.visitorEmail = chatData.visitorEmail;
               state.contactShown = !!(chatData.visitorName || chatData.visitorEmail);
+              state.takenOver = !!chatData.takenOver;
 
               if (chatData.messages && chatData.messages.length > 0) {
                 hasHistory = true;
-                chatData.messages.forEach((msg) => {
-                  if (msg.role === "user") {
-                    addMessage("user", msg.content);
-                  } else if (msg.role === "assistant") {
-                    addMessage("assistant", msg.content);
-                    if (msg.products && msg.products.length > 0) {
-                      addProductCards(msg.products);
-                    }
-                  }
-                });
+                renderMessages(chatData.messages);
               }
             } else {
               localStorage.removeItem(`inseller-${storeId}-conversation`);
@@ -400,7 +439,10 @@
 
       if (!hasHistory) {
         setTimeout(
-          () => addMessage("assistant", greetingMsg),
+          () => {
+            addMessage("assistant", greetingMsg);
+            state.messageCount = 0;
+          },
           1000,
         );
       }
@@ -414,6 +456,9 @@
         state.contactShown = false;
         state.waiting = false;
         state.isInquiryResponse = false;
+        state.messageCount = 0;
+        state.takenOver = false;
+        stopPolling();
         messagesEl.innerHTML = "";
         addMessage("assistant", greetingMsg);
       });
@@ -470,17 +515,23 @@
         `inseller-${storeId}-conversation`,
         JSON.stringify({ id: data.conversationId, timestamp: Date.now() }),
       );
+      startPolling();
 
       messagesEl.removeChild(typing);
-      addMessage("assistant", data.reply || "Sorry, I did not get that.");
-      addProductCards(
-        Array.isArray(data.products)
-          ? data.products
-          : data.product
-            ? [data.product]
-            : [],
-        wasInquiryResponse,
-      );
+      if (data.reply) {
+        addMessage("assistant", data.reply);
+        addProductCards(
+          Array.isArray(data.products)
+            ? data.products
+            : data.product
+              ? [data.product]
+              : [],
+          wasInquiryResponse
+        );
+        state.messageCount = (state.messageCount || 0) + 2; // user + assistant
+      } else {
+        state.messageCount = (state.messageCount || 0) + 1; // user only
+      }
       messagesEl.scrollTop = messagesEl.scrollHeight;
     } catch (error) {
       if (typing.parentNode) messagesEl.removeChild(typing);

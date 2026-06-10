@@ -4,6 +4,18 @@ import { userCanAccessStore } from "../middleware/auth.js";
 
 const router = express.Router();
 
+router.get("/", async (req, res) => {
+  try {
+    const store = await prisma.store.findFirst({
+      where: { userId: req.user.id },
+    });
+    return res.json(store || null);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Unable to load store" });
+  }
+});
+
 router.patch("/:storeId", async (req, res) => {
   try {
     const { storeId } = req.params;

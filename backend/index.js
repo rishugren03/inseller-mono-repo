@@ -11,6 +11,7 @@ import syncRouter from "./routes/sync.js";
 import widgetConfigRouter from "./routes/widget.js";
 import storeRouter from "./routes/store.js";
 import authRouter from "./routes/auth.js";
+import inboxRouter from "./routes/inbox.js";
 import { requireAuth } from "./middleware/auth.js";
 
 dotenv.config();
@@ -30,6 +31,7 @@ app.use("/api/leads", requireAuth, leadsRouter);
 app.use("/api/sync", requireAuth, syncRouter);
 app.use("/api/widget-config", widgetConfigRouter);
 app.use("/api/store", requireAuth, storeRouter);
+app.use("/api/inbox", requireAuth, inboxRouter);
 
 app.use((req, res) => {
   res.status(404).json({ error: "Not found" });

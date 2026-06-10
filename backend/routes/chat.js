@@ -195,6 +195,34 @@ router.post("/", async (req, res) => {
       ? await prisma.conversation.findUnique({ where: { id: conversationId } })
       : null;
 
+    if (conversation && conversation.takenOver) {
+      const updatedMessages = [
+        ...(conversation.messages || []),
+        {
+          role: "user",
+          content: message,
+          visitorName: visitorName || null,
+          visitorEmail: visitorEmail || null,
+          timestamp: new Date().toISOString(),
+        },
+      ];
+      const conv = await prisma.conversation.update({
+        where: { id: conversation.id },
+        data: {
+          visitorEmail: visitorEmail || conversation.visitorEmail || null,
+          visitorName: visitorName || conversation.visitorName || null,
+          messages: updatedMessages,
+        },
+      });
+      return res.json({
+        reply: null,
+        product: null,
+        products: [],
+        conversationId: conv.id,
+        takenOver: true,
+      });
+    }
+
     const history = [];
     if (conversation?.messages) {
       const items = Array.isArray(conversation.messages)
@@ -223,7 +251,7 @@ router.post("/", async (req, res) => {
         visitorName: visitorName || null,
         visitorEmail: visitorEmail || null,
       },
-      { role: "assistant", content: replyText },
+      { role: "assistant", content: replyText, isInquiry: !!isInquiry },
     ];
 
     let conv;
@@ -301,6 +329,7 @@ router.get("/:conversationId", async (req, res) => {
         const { products: parsedProducts, cleanText } = extractAndStripProducts(msg.content);
         const products = buildProductCards(conversation.store, parsedProducts);
         processedMessages.push({
+          ...msg,
           role: "assistant",
           content: cleanText || msg.content,
           products: products || [],
@@ -315,6 +344,7 @@ router.get("/:conversationId", async (req, res) => {
       visitorName: conversation.visitorName,
       visitorEmail: conversation.visitorEmail,
       messages: processedMessages,
+      takenOver: conversation.takenOver,
     });
   } catch (error) {
     console.error(error);
