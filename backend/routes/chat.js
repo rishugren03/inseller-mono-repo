@@ -173,7 +173,7 @@ function createSystemPrompt(store, shopUrl) {
 
 router.post("/", async (req, res) => {
   try {
-    const { storeId, message, conversationId, visitorName, visitorEmail } =
+    const { storeId, message, conversationId, visitorName, visitorEmail, isInquiry } =
       req.body;
     if (!storeId || !message) {
       return res
@@ -187,7 +187,10 @@ router.post("/", async (req, res) => {
     }
 
     const shopUrl = store.shopUrl;
-    const prompt = createSystemPrompt(store, `https://${shopUrl}`);
+    let prompt = createSystemPrompt(store, `https://${shopUrl}`);
+    if (isInquiry) {
+      prompt += "\n\nCRITICAL CONSTRAINT: The user clicked 'Inquire About This' on a product. Explain/summarize the product in under 35 words. Keep it very short, sweet, and highly concise so it fits on screen. Do not include any Call-To-Action questions (like asking if they are ready to buy) as we will render purchase buttons directly below your message.";
+    }
     const conversation = conversationId
       ? await prisma.conversation.findUnique({ where: { id: conversationId } })
       : null;

@@ -73,6 +73,15 @@
     .ins-input-row input::placeholder { color: #6b7280; }
     .ins-input-row button { border:none; border-radius:10px; padding: 12px 16px; background: var(--ins-accent, #FF6B2C); color: var(--ins-text-on-accent, #111827); cursor:pointer; font-weight: 800; }
     .ins-footer { padding: 10px 18px; border-top: 1px solid #f1f5f9; background: #ffffff; font-size: 0.8rem; color:#6b7280; text-align:center; }
+    .ins-product-card.ins-compact { flex-direction: row; height: 90px; align-items: center; }
+    .ins-product-card.ins-compact .ins-product-image-container { width: 90px; height: 90px; border-bottom: none; border-right: 1px solid #f1f5f9; flex-shrink: 0; }
+    .ins-product-card.ins-compact .ins-product-info { padding: 8px 10px; flex: 1; min-width: 0; justify-content: center; }
+    .ins-product-card.ins-compact .ins-product-title { font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ins-product-card.ins-compact .ins-product-price { font-size: 0.85rem; }
+    .ins-product-card.ins-compact .ins-product-description { display: none; }
+    .ins-product-card.ins-compact .ins-product-actions { padding: 8px 12px 8px 0; flex-direction: column; gap: 4px; width: 110px; flex-shrink: 0; }
+    .ins-product-card.ins-compact .ins-product-button-primary { padding: 6px 8px; font-size: 0.75rem; box-shadow: none; }
+    .ins-product-card.ins-compact .ins-product-button-secondary { padding: 5px 8px; font-size: 0.75rem; }
     @media(max-width:420px){ .ins-widget-root{right:12px;bottom:12px;} .ins-window{width:calc(100vw - 24px);max-width:none;height:calc(100vh - 96px);max-height:none;bottom:60px;} .ins-pill-label{display:none;} }
   `;
   document.head.appendChild(style);
@@ -128,6 +137,7 @@
     visitorEmail: null,
     contactShown: false,
     waiting: false,
+    isInquiryResponse: false,
   };
 
   function getContrastColor(hexColor) {
@@ -197,12 +207,12 @@
     }
   }
 
-  function addProductCard(product) {
+  function addProductCard(product, isSecondaryCard = false) {
     if (!product) return;
     const safeUrl = isSafeProductUrl(product.url) ? product.url : "#";
 
     const card = document.createElement("div");
-    card.className = "ins-product-card";
+    card.className = `ins-product-card${isSecondaryCard ? " ins-compact" : ""}`;
 
     // 1. Image Container
     const imgContainer = document.createElement("div");
@@ -249,33 +259,52 @@
     const actions = document.createElement("div");
     actions.className = "ins-product-actions";
 
-    const viewButton = document.createElement("a");
-    viewButton.className = "ins-product-button-primary";
-    viewButton.href = safeUrl;
-    viewButton.target = "_blank";
-    viewButton.rel = "noopener noreferrer";
-    viewButton.textContent = "View Product";
-    actions.appendChild(viewButton);
+    if (isSecondaryCard) {
+      const addToCartButton = document.createElement("a");
+      addToCartButton.className = "ins-product-button-primary";
+      addToCartButton.href = safeUrl;
+      addToCartButton.target = "_blank";
+      addToCartButton.rel = "noopener noreferrer";
+      addToCartButton.textContent = "Add to cart";
+      actions.appendChild(addToCartButton);
 
-    const inquireButton = document.createElement("button");
-    inquireButton.type = "button";
-    inquireButton.className = "ins-product-button-secondary";
-    inquireButton.textContent = "Inquire About This";
-    inquireButton.addEventListener("click", () => {
-      input.value = `I am interested in: "${product.title || "this product"}". Can you tell me more about it?`;
-      input.focus();
-      submitMessage();
-    });
-    actions.appendChild(inquireButton);
+      const buyNowButton = document.createElement("a");
+      buyNowButton.className = "ins-product-button-secondary";
+      buyNowButton.href = safeUrl;
+      buyNowButton.target = "_blank";
+      buyNowButton.rel = "noopener noreferrer";
+      buyNowButton.textContent = "Buy now";
+      actions.appendChild(buyNowButton);
+    } else {
+      const viewButton = document.createElement("a");
+      viewButton.className = "ins-product-button-primary";
+      viewButton.href = safeUrl;
+      viewButton.target = "_blank";
+      viewButton.rel = "noopener noreferrer";
+      viewButton.textContent = "View Product";
+      actions.appendChild(viewButton);
+
+      const inquireButton = document.createElement("button");
+      inquireButton.type = "button";
+      inquireButton.className = "ins-product-button-secondary";
+      inquireButton.textContent = "Inquire About This";
+      inquireButton.addEventListener("click", () => {
+        state.isInquiryResponse = true;
+        input.value = `I am interested in: "${product.title || "this product"}". Can you tell me more about it?`;
+        input.focus();
+        submitMessage();
+      });
+      actions.appendChild(inquireButton);
+    }
 
     card.appendChild(actions);
     messagesEl.appendChild(card);
     messagesEl.scrollTop = messagesEl.scrollHeight;
   }
 
-  function addProductCards(products) {
+  function addProductCards(products, isSecondaryCard = false) {
     if (!Array.isArray(products)) return;
-    products.forEach(addProductCard);
+    products.forEach((p) => addProductCard(p, isSecondaryCard));
   }
 
   function showContactBlock() {
@@ -356,11 +385,15 @@
     const typing = addTyping();
     state.waiting = true;
 
+    const wasInquiryResponse = state.isInquiryResponse;
+    state.isInquiryResponse = false;
+
     try {
       const payload = {
         storeId,
         message: text,
         conversationId: state.conversationId,
+        isInquiry: wasInquiryResponse,
       };
       if (state.visitorName) payload.visitorName = state.visitorName;
       if (state.visitorEmail) payload.visitorEmail = state.visitorEmail;
@@ -378,6 +411,7 @@
         `inseller-${storeId}-conversation`,
         data.conversationId,
       );
+
       messagesEl.removeChild(typing);
       addMessage("assistant", data.reply || "Sorry, I did not get that.");
       addProductCards(
@@ -386,6 +420,7 @@
           : data.product
             ? [data.product]
             : [],
+        wasInquiryResponse,
       );
       messagesEl.scrollTop = messagesEl.scrollHeight;
     } catch (error) {
