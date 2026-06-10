@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String         @id @default(uuid())
+  firebaseUid    String         @unique
+  email          String?
+  displayName    String?
+  photoUrl       String?
+  authProvider   String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  stores         Store[]
+}
+
+model Store {
+  id            String         @id @default(uuid())
+  shopUrl       String         @unique
+  userId        String?
+  user          User?          @relation(fields: [userId], references: [id])
+  botName       String         @default("Inseller")
+  greeting      String         @default("Hey! How can I help you today?")
+  themeColor    String         @default("#FF6B2C")
+  productCache  Json
+  productSummary String  @db.Text
+  brevoKey      String?
+  brevoSender   String?
+  createdAt     DateTime       @default(now())
+  conversations Conversation[]
+
+  @@index([userId])
+}
+
+model Conversation {
+  id           String   @id @default(uuid())
+  storeId      String
+  store        Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  visitorEmail String?
+  visitorName  String?
+  messages     Json
+  emailSent    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  @@index([storeId])
+}
