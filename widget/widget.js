@@ -382,15 +382,30 @@
     const nameInput = block.querySelector(".ins-contact-name");
     const emailInput = block.querySelector(".ins-contact-email");
     const saveButton = block.querySelector(".ins-contact-button");
-    saveButton.addEventListener("click", () => {
-      state.visitorName = nameInput.value.trim() || state.visitorName;
-      state.visitorEmail = emailInput.value.trim() || state.visitorEmail;
+    saveButton.addEventListener("click", async () => {
+      const name = nameInput.value.trim() || state.visitorName;
+      const email = emailInput.value.trim() || state.visitorEmail;
+      state.visitorName = name;
+      state.visitorEmail = email;
       block.remove();
       addMessage(
         "assistant",
         "Thanks! I will use that to follow up if needed.",
       );
       messagesEl.scrollTop = messagesEl.scrollHeight;
+
+      // Persist to DB immediately if we already have a conversation
+      if (state.conversationId && (name || email)) {
+        try {
+          await fetch(`${apiBase}/chat/${state.conversationId}/contact`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ visitorName: name, visitorEmail: email }),
+          });
+        } catch (err) {
+          console.error("Failed to save contact info", err);
+        }
+      }
     });
   }
 

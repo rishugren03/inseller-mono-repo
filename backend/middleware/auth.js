@@ -15,6 +15,10 @@ export async function requireAuth(req, res, next) {
       .verifyIdToken(match.groups.token);
     const provider = firebaseUser.firebase?.sign_in_provider || null;
 
+    if (firebaseUser.email_verified !== true && provider === "password") {
+      return res.status(403).json({ error: "Email verification required" });
+    }
+
     req.firebaseUser = firebaseUser;
     req.user = await prisma.user.upsert({
       where: { firebaseUid: firebaseUser.uid },

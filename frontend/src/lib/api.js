@@ -1,4 +1,4 @@
-import { resolveAuthToken } from "./authToken";
+import { resolveAuthToken, handleUnauthorized } from "./authToken";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
 
@@ -18,6 +18,9 @@ export async function fetchJson(path, options = {}) {
     .json()
     .catch(() => ({ error: "Invalid JSON response" }));
   if (!res.ok) {
+    if (res.status === 401) {
+      handleUnauthorized();
+    }
     throw new Error(payload.error || "Request failed");
   }
   return payload;

@@ -2,6 +2,8 @@ import express from "express";
 import prisma from "../lib/prisma.js";
 import { generateAssistantReply } from "../lib/claude.js";
 import { sendFollowUpEmail } from "../lib/brevo.js";
+import { generateFollowUpEmailContent } from "../lib/followupAi.js";
+import { buildThemedEmailHtml } from "../lib/emailTemplate.js";
 
 const router = express.Router();
 
@@ -239,9 +241,28 @@ router.post("/", async (req, res) => {
       systemPrompt: prompt,
       history,
     });
-    const { products: parsedProducts, cleanText } = extractAndStripProducts(replyText);
+
+    let finalReplyText = replyText;
+    if (isInquiry) {
+      const match = message.match(/I am interested in:\s*"([^"]+)"/);
+      if (match && match[1]) {
+        const title = match[1];
+        const rawProducts = getProductCacheArray(store.productCache);
+        const matchedProduct = findProductByTitle(rawProducts, title);
+        if (matchedProduct) {
+          const cleanShopUrl = store.shopUrl.replace(/^https?:\/\//, "");
+          const url = matchedProduct.handle
+            ? `https://${cleanShopUrl}/products/${matchedProduct.handle}`
+            : "";
+          const price = (matchedProduct.variants && matchedProduct.variants[0]?.price) || "";
+          finalReplyText += `\n\n{"title":"${matchedProduct.title}","price":"${price}","url":"${url}"}`;
+        }
+      }
+    }
+
+    const { products: parsedProducts, cleanText } = extractAndStripProducts(finalReplyText);
     const products = buildProductCards(store, parsedProducts);
-    const cleanReply = cleanText || replyText;
+    const cleanReply = cleanText || finalReplyText;
 
     const updatedMessages = [
       ...(conversation?.messages || []),
@@ -251,7 +272,7 @@ router.post("/", async (req, res) => {
         visitorName: visitorName || null,
         visitorEmail: visitorEmail || null,
       },
-      { role: "assistant", content: replyText, isInquiry: !!isInquiry },
+      { role: "assistant", content: finalReplyText, isInquiry: !!isInquiry },
     ];
 
     let conv;
@@ -278,26 +299,69 @@ router.post("/", async (req, res) => {
     if (visitorEmail && !conv.emailSent && visitorName) {
       setTimeout(async () => {
         try {
+          const currentConv = await prisma.conversation.findUnique({
+            where: { id: conv.id },
+            include: { store: true },
+          });
+
+          if (!currentConv || currentConv.emailSent || currentConv.takenOver) {
+            return;
+          }
+
           const senderEmail = process.env.BREVO_SENDER;
-          if (senderEmail && store.brevoSender) {
+          if (senderEmail && currentConv.store.brevoSender) {
+            const allProducts = [];
+            const seenTitles = new Set();
+            const messagesArray = Array.isArray(currentConv.messages)
+              ? currentConv.messages
+              : [];
+
+            for (const msg of messagesArray) {
+              if (msg.role === "assistant" && msg.content) {
+                const { products: parsed } = extractAndStripProducts(msg.content);
+                const resolved = buildProductCards(currentConv.store, parsed);
+                for (const p of resolved) {
+                  if (p && p.title && !seenTitles.has(p.title.toLowerCase())) {
+                    seenTitles.add(p.title.toLowerCase());
+                    allProducts.push(p);
+                  }
+                }
+              }
+            }
+
+            const { subject, body } = await generateFollowUpEmailContent({
+              messages: messagesArray,
+              store: currentConv.store,
+              visitorName: currentConv.visitorName,
+            });
+
+            const html = buildThemedEmailHtml({
+              store: currentConv.store,
+              visitorName: currentConv.visitorName,
+              subject,
+              bodyText: body,
+              products: allProducts,
+            });
+
             await sendFollowUpEmail({
               sender: senderEmail,
-              replyTo: store.brevoSender,
+              replyTo: currentConv.store.brevoSender,
               recipient: visitorEmail,
-              subject: `Thanks for chatting with ${store.botName}`,
-              html: `<p>Hi ${visitorName},</p><p>Thanks for chatting with ${store.botName}. If you have more questions, reply to this email and we’ll help you right away.</p>`,
+              subject,
+              html,
             });
+
             await prisma.conversation.update({
-              where: { id: conv.id },
+              where: { id: currentConv.id },
               data: { emailSent: true },
             });
           }
         } catch (error) {
           console.error("Brevo follow up failed", error);
         }
-      }, 3600000);
+      }, 300000);
     }
-
+// 3600000
     return res.json({
       reply: cleanReply,
       product: products[0] || null,
@@ -307,6 +371,37 @@ router.post("/", async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Unable to generate chat response" });
+  }
+});
+
+router.patch("/:conversationId/contact", async (req, res) => {
+  try {
+    const { conversationId } = req.params;
+    const { visitorName, visitorEmail } = req.body;
+
+    if (!visitorName && !visitorEmail) {
+      return res.status(400).json({ error: "visitorName or visitorEmail is required" });
+    }
+
+    const conversation = await prisma.conversation.findUnique({
+      where: { id: conversationId },
+    });
+    if (!conversation) {
+      return res.status(404).json({ error: "Conversation not found" });
+    }
+
+    const updated = await prisma.conversation.update({
+      where: { id: conversationId },
+      data: {
+        visitorName: visitorName || conversation.visitorName || null,
+        visitorEmail: visitorEmail || conversation.visitorEmail || null,
+      },
+    });
+
+    return res.json({ success: true, visitorName: updated.visitorName, visitorEmail: updated.visitorEmail });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Unable to update contact info" });
   }
 });
 

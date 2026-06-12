@@ -5,18 +5,19 @@ import Inbox from "./pages/Inbox";
 import Customize from "./pages/Customize";
 import Leads from "./pages/Leads";
 import Auth from "./pages/Auth";
+import VerifyEmail from "./pages/VerifyEmail";
 import { useAuth } from "./auth/AuthContext";
 import { logOut } from "./lib/firebase";
 import { fetchJson } from "./lib/api";
 
 function App() {
-  const { initializing, isAuthenticated, user } = useAuth();
+  const { initializing, isAuthenticated, user, emailVerified } = useAuth();
   const [loadingStore, setLoadingStore] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && emailVerified) {
       setLoadingStore(true);
       fetchJson("/api/store")
         .then((store) => {
@@ -35,7 +36,7 @@ function App() {
       localStorage.removeItem("insellerStoreId");
       setLoadingStore(false);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, emailVerified]);
 
   // Close sidebar on path change (mobile)
   useEffect(() => {
@@ -53,6 +54,10 @@ function App() {
 
   if (!isAuthenticated) {
     return <Auth />;
+  }
+
+  if (!emailVerified) {
+    return <VerifyEmail />;
   }
 
   return (

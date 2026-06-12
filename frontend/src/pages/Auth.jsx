@@ -3,6 +3,7 @@ import {
   signInWithEmail,
   signInWithGoogle,
   signUpWithEmail,
+  sendVerification,
 } from "../lib/firebase";
 
 export default function Auth() {
@@ -21,7 +22,8 @@ export default function Auth() {
 
     try {
       if (isSignUp) {
-        await signUpWithEmail(email, password);
+        const userCredential = await signUpWithEmail(email, password);
+        await sendVerification(userCredential.user);
       } else {
         await signInWithEmail(email, password);
       }

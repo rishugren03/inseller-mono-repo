@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import morgan from "morgan";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -22,6 +23,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
+app.use(morgan("dev"));
 app.use(express.json());
 app.use("/widget", express.static(path.join(__dirname, "../widget")));
 app.use("/api/auth", requireAuth, authRouter);
