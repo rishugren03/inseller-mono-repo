@@ -14,6 +14,7 @@ import storeRouter from "./routes/store.js";
 import authRouter from "./routes/auth.js";
 import inboxRouter from "./routes/inbox.js";
 import { requireAuth } from "./middleware/auth.js";
+import { startEmailCron } from "./lib/emailCron.js";
 
 dotenv.config();
 
@@ -46,4 +47,5 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
   console.log(`Inseller backend listening on http://localhost:${PORT}`);
+  startEmailCron();
 });
