@@ -4,7 +4,7 @@ import { userCanAccessStore } from "../middleware/auth.js";
 
 const router = express.Router();
 
-// GET all conversations for a store
+// GET all conversations for a store with pagination and search
 router.get("/:storeId", async (req, res) => {
   try {
     const { storeId } = req.params;
@@ -16,9 +16,27 @@ router.get("/:storeId", async (req, res) => {
       return res.status(403).json({ error: "Store access denied" });
     }
 
+    const page = parseInt(req.query.page) || 1;
+    let limit = parseInt(req.query.limit) || 20;
+    if (limit > 20) {
+      limit = 20;
+    }
+    const search = req.query.search || "";
+    const skip = (page - 1) * limit;
+
+    const whereClause = { storeId };
+    if (search.trim()) {
+      whereClause.OR = [
+        { visitorName: { contains: search.trim(), mode: "insensitive" } },
+        { visitorEmail: { contains: search.trim(), mode: "insensitive" } },
+      ];
+    }
+
     const conversations = await prisma.conversation.findMany({
-      where: { storeId },
+      where: whereClause,
       orderBy: { createdAt: "desc" },
+      skip,
+      take: limit,
     });
 
     return res.json(conversations);
