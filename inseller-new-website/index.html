@@ -438,7 +438,7 @@
     .widget-mockup {
       width: 100%;
       max-width: 360px;
-      height: 480px;
+      height: 540px;
       background-color: #0a0f1e;
       border: 1px solid var(--border);
       border-radius: 16px;
@@ -616,6 +616,129 @@
 
     .widget-send.active {
       color: var(--accent);
+    }
+
+    /* ----------------------------------------------------
+       Inline Product Card (inside agent bubble)
+       ---------------------------------------------------- */
+    .msg-product-card {
+      background: #0d1829;
+      border: 1px solid #1e3050;
+      border-radius: 10px;
+      overflow: hidden;
+      width: 200px;
+      align-self: flex-start;
+      opacity: 0;
+      transform: translateY(8px);
+      animation: msgReveal 0.3s forwards cubic-bezier(0.16, 1, 0.3, 1);
+      flex-shrink: 0;
+    }
+
+    .msg-product-img {
+      width: 100%;
+      height: 86px;
+      background: linear-gradient(135deg, #1a3a5c 0%, #0d2040 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 38px;
+    }
+
+    .msg-product-body {
+      padding: 10px 12px;
+    }
+
+    .msg-product-tag {
+      font-size: 9px;
+      font-weight: 700;
+      color: #10b981;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 4px;
+    }
+
+    .msg-product-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: #f1f5f9;
+      line-height: 1.3;
+      margin-bottom: 4px;
+    }
+
+    .msg-product-price {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .msg-product-btn {
+      width: 100%;
+      padding: 7px;
+      background: var(--accent);
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font-family);
+      letter-spacing: 0.3px;
+      transition: background 0.2s;
+    }
+
+    .msg-product-btn:hover {
+      background: var(--accent-hover);
+    }
+
+    /* ----------------------------------------------------
+       Quick Reply Chips
+       ---------------------------------------------------- */
+    .quick-replies {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-self: flex-start;
+      padding-left: 2px;
+      opacity: 0;
+      transform: translateY(6px);
+      animation: msgReveal 0.3s 0.1s forwards cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .qr-chip {
+      padding: 5px 11px;
+      background: transparent;
+      border: 1px solid rgba(255, 107, 44, 0.45);
+      border-radius: 20px;
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--font-family);
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .qr-chip:hover {
+      background: rgba(255, 107, 44, 0.1);
+      border-color: var(--accent);
+    }
+
+    /* Widget powered-by branding */
+    .widget-branding {
+      text-align: center;
+      font-size: 10px;
+      color: var(--text-muted);
+      padding: 5px 0 6px 0;
+      opacity: 0.5;
+      border-top: 1px solid var(--border);
+      background: rgba(10, 15, 30, 0.85);
+      flex-shrink: 0;
+    }
+
+    .widget-branding span {
+      color: var(--accent);
+      font-weight: 600;
     }
 
     .demo-info {
@@ -1179,6 +1302,7 @@
                 </button>
               </div>
             </div>
+            <div class="widget-branding">Powered by <span>Inseller</span></div>
           </div>
         </div>
 
@@ -1386,10 +1510,17 @@
     const chatInput = document.getElementById('chat-input');
     const chatSendBtn = document.getElementById('chat-send-btn');
 
+    // Rich conversation showcasing: greeting → quick-replies → product card → size check → email capture
     const conversationSteps = [
-      { sender: 'agent', type: 'text', content: "Hey! Looking for something specific? I can help 👋" },
-      { sender: 'user', type: 'typing', content: "do you have running shoes under 3000" },
-      { sender: 'agent', type: 'text', content: "Yes! The NightRun Pro X2 is ₹2,799 and in stock in all sizes. Want me to add it to your cart?" }
+      { sender: 'agent', type: 'text',        content: "Hey! 👋 What can I help you find today?" },
+      { sender: 'agent', type: 'quickreplies', options: ['Running shoes 👟', 'Track order 📦', 'Offers 🔥'] },
+      { sender: 'user',  type: 'text',        content: 'Running shoes' },
+      { sender: 'agent', type: 'text',        content: "Found a great match for you —" },
+      { sender: 'agent', type: 'product',     product: { emoji: '👟', tag: 'In stock · Free delivery', name: 'NightRun Pro X2', price: '₹2,799' } },
+      { sender: 'user',  type: 'text',        content: 'do you have it in size 10?' },
+      { sender: 'agent', type: 'text',        content: "Yes! Size 10 is available ✅ Want an email reminder to check out?" },
+      { sender: 'user',  type: 'text',        content: 'sure — priya@gmail.com' },
+      { sender: 'agent', type: 'text',        content: "Done! 🎉 You'll get a follow-up from the store within the hour." }
     ];
 
     let currentStep = 0;
@@ -1400,6 +1531,35 @@
       msgDiv.className = `msg ${sender}`;
       msgDiv.innerText = text;
       chatBody.appendChild(msgDiv);
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    function appendProductCard(product) {
+      const card = document.createElement('div');
+      card.className = 'msg-product-card';
+      card.innerHTML = `
+        <div class="msg-product-img">${product.emoji}</div>
+        <div class="msg-product-body">
+          <div class="msg-product-tag">${product.tag}</div>
+          <div class="msg-product-name">${product.name}</div>
+          <div class="msg-product-price">${product.price}</div>
+          <button class="msg-product-btn">View Product &rarr;</button>
+        </div>
+      `;
+      chatBody.appendChild(card);
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    function appendQuickReplies(options) {
+      const qrDiv = document.createElement('div');
+      qrDiv.className = 'quick-replies';
+      options.forEach(opt => {
+        const chip = document.createElement('button');
+        chip.className = 'qr-chip';
+        chip.textContent = opt;
+        qrDiv.appendChild(chip);
+      });
+      chatBody.appendChild(qrDiv);
       chatBody.scrollTop = chatBody.scrollHeight;
     }
 
@@ -1418,9 +1578,7 @@
 
     function removeTypingIndicator() {
       const typingDiv = document.getElementById('temp-typing');
-      if (typingDiv) {
-        typingDiv.remove();
-      }
+      if (typingDiv) typingDiv.remove();
     }
 
     function simulateTypingInput(text, callback) {
@@ -1438,40 +1596,60 @@
             chatInput.value = '';
             chatSendBtn.classList.remove('active');
             callback();
-          }, 400); // Small pause before sending
+          }, 400);
         }
-      }, 60); // Speed of user typing
+      }, 55);
     }
 
     function runConversation() {
       if (currentStep >= conversationSteps.length) {
-        // Conversation complete. Wait 6 seconds and restart
         loopTimeoutId = setTimeout(() => {
           chatBody.innerHTML = '';
           currentStep = 0;
           runConversation();
-        }, 6000);
+        }, 5500);
         return;
       }
 
       const step = conversationSteps[currentStep];
 
       if (step.sender === 'agent') {
-        showTypingIndicator();
-        setTimeout(() => {
-          removeTypingIndicator();
-          appendMessage('agent', step.content);
-          currentStep++;
-          setTimeout(runConversation, 1200);
-        }, 1500); // Agent thinking/typing duration
+        if (step.type === 'quickreplies') {
+          // Quick replies appear right after agent message — no typing indicator
+          setTimeout(() => {
+            appendQuickReplies(step.options);
+            currentStep++;
+            setTimeout(runConversation, 1500);
+          }, 300);
+        } else if (step.type === 'product') {
+          // Product card: brief typing then card appears
+          showTypingIndicator();
+          setTimeout(() => {
+            removeTypingIndicator();
+            appendProductCard(step.product);
+            currentStep++;
+            setTimeout(runConversation, 1400);
+          }, 900);
+        } else {
+          // Regular text message
+          showTypingIndicator();
+          setTimeout(() => {
+            removeTypingIndicator();
+            appendMessage('agent', step.content);
+            currentStep++;
+            setTimeout(runConversation, 1000);
+          }, 1200);
+        }
       } else if (step.sender === 'user') {
+        // Dismiss any visible quick-reply chips before user types
+        chatBody.querySelectorAll('.quick-replies').forEach(el => el.remove());
         setTimeout(() => {
           simulateTypingInput(step.content, () => {
             appendMessage('user', step.content);
             currentStep++;
-            setTimeout(runConversation, 800);
+            setTimeout(runConversation, 900);
           });
-        }, 800); // Pause before user starts typing
+        }, 700);
       }
     }
 
