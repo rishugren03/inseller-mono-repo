@@ -250,18 +250,47 @@ router.post("/", async (req, res) => {
         const rawProducts = getProductCacheArray(store.productCache);
         const matchedProduct = findProductByTitle(rawProducts, title);
         if (matchedProduct) {
-          const cleanShopUrl = store.shopUrl.replace(/^https?:\/\//, "");
-          const url = matchedProduct.handle
-            ? `https://${cleanShopUrl}/products/${matchedProduct.handle}`
-            : "";
-          const price = (matchedProduct.variants && matchedProduct.variants[0]?.price) || "";
-          finalReplyText += `\n\n{"title":"${matchedProduct.title}","price":"${price}","url":"${url}"}`;
+          const { products: initialProducts } = extractAndStripProducts(replyText);
+          const normalizedTargetTitle = matchedProduct.title.trim().toLowerCase();
+          const alreadyHasProduct = initialProducts.some((p) => {
+            const pTitle = p?.title?.toString().toLowerCase().trim() || "";
+            return (
+              pTitle === normalizedTargetTitle ||
+              pTitle.includes(normalizedTargetTitle) ||
+              normalizedTargetTitle.includes(pTitle)
+            );
+          });
+
+          if (!alreadyHasProduct) {
+            const cleanShopUrl = store.shopUrl.replace(/^https?:\/\//, "");
+            const url = matchedProduct.handle
+              ? `https://${cleanShopUrl}/products/${matchedProduct.handle}`
+              : "";
+            const price = (matchedProduct.variants && matchedProduct.variants[0]?.price) || "";
+            finalReplyText += `\n\n{"title":"${matchedProduct.title}","price":"${price}","url":"${url}"}`;
+          }
         }
       }
     }
 
     const { products: parsedProducts, cleanText } = extractAndStripProducts(finalReplyText);
-    const products = buildProductCards(store, parsedProducts);
+    
+    // Deduplicate parsed products by title
+    const uniqueParsedProducts = [];
+    const seenTitles = new Set();
+    for (const p of parsedProducts) {
+      if (p && p.title) {
+        const norm = p.title.trim().toLowerCase();
+        if (!seenTitles.has(norm)) {
+          seenTitles.add(norm);
+          uniqueParsedProducts.push(p);
+        }
+      } else {
+        uniqueParsedProducts.push(p);
+      }
+    }
+
+    const products = buildProductCards(store, uniqueParsedProducts);
     const cleanReply = cleanText || finalReplyText;
 
     const updatedMessages = [
