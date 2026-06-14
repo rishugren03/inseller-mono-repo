@@ -45,7 +45,7 @@ images:
 
 substitutions:
   _IMAGE_NAME: gcr.io/insellerdotin/inseller-frontend
-  _SERVICE_NAME: inseller-frontend
+  _SERVICE_NAME: inseller-ui
   _REGION: us-central1
   _VITE_API_BASE_URL: https://inseller-apii-1005500705645.europe-west1.run.app
   _VITE_FIREBASE_API_KEY: AIzaSyD7X58imbqc8r_z_RUHUCWzw6-_yHJ9B40
