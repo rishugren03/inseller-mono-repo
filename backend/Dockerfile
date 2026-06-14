@@ -24,7 +24,7 @@ COPY . .
 # Generate Prisma client (uses the schema already present in ./prisma)
 RUN npx prisma generate
 
-EXPOSE 3000
+EXPOSE 8080
 
-# Run migrations then start the server
-CMD ["sh", "-c", "npx prisma migrate deploy && node index.js"]
+# Run migrations (non-fatal) then start the server
+CMD ["sh", "-c", "npx prisma migrate deploy; node index.js"]
