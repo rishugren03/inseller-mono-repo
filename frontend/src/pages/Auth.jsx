@@ -51,7 +51,10 @@ export default function Auth() {
     <main className="auth-shell">
       <section className="auth-panel">
         <div className="brand auth-brand">
-          <div className="brand-mark">Inseller</div>
+          <div className="brand-mark">
+            <img src="/favicon.svg" alt="Inseller Logo" width="32" height="32" />
+            Inseller
+          </div>
           <p>AI sales chat for Shopify</p>
         </div>
 
