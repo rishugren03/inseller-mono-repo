@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terms of Service — Inseller</title>
+  <meta name="description" content="Terms of Service for Inseller AI sales chat widget.">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #0d1117;
+      --border: #1e293b;
+      --accent: #FF6B2C;
+      --accent-hover: #ff7f46;
+      --text-primary: #f1f5f9;
+      --text-muted: #64748b;
+      --font-family: 'Plus Jakarta Sans', sans-serif;
+      --max-width: 800px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      background-color: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font-family);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      min-height: 100vh;
+      line-height: 1.6;
+      padding-top: 120px;
+    }
+
+    .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 100;
+      background-color: rgba(10, 10, 15, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-wrapper {
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1100px;
+    }
+
+    .wordmark {
+      font-size: 20px;
+      font-weight: 600;
+      color: #ffffff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-primary {
+      background-color: var(--accent);
+      color: #ffffff;
+      border: 1px solid var(--accent);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--accent-hover);
+      border-color: var(--accent-hover);
+    }
+
+    /* Content Styling */
+    .content-section {
+      padding: 40px 0 80px 0;
+    }
+
+    h1 {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #ffffff;
+    }
+
+    .last-updated {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 40px;
+    }
+
+    h2 {
+      font-size: 22px;
+      font-weight: 600;
+      margin: 32px 0 16px 0;
+      color: #ffffff;
+    }
+
+    p {
+      color: #cbd5e1;
+      margin-bottom: 16px;
+      font-size: 15px;
+    }
+
+    ul {
+      margin-bottom: 16px;
+      padding-left: 20px;
+      color: #cbd5e1;
+    }
+
+    li {
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+
+    /* Footer Styling */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 60px 0 30px 0;
+      background-color: rgba(13, 17, 23, 0.4);
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 40px;
+      font-size: 14px;
+      max-width: 1100px;
+    }
+
+    .footer-brand {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .footer-brand-desc {
+      color: var(--text-muted);
+      max-width: 280px;
+      line-height: 1.5;
+    }
+
+    .footer-contact-info {
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .footer-contact-info a {
+      color: var(--text-primary);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .footer-contact-info a:hover {
+      color: var(--accent);
+    }
+
+    .footer-links-col {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .footer-links-col h4 {
+      color: var(--text-primary);
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .footer-links-col a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .footer-links-col a:hover {
+      color: var(--text-primary);
+    }
+
+    .footer-socials {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .social-link {
+      color: var(--text-muted);
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .social-link:hover {
+      color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: var(--text-muted);
+      max-width: 1100px;
+    }
+
+    @media (max-width: 768px) {
+      .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+        text-align: center;
+      }
+
+      .footer-brand {
+        align-items: center;
+      }
+
+      .footer-links-col {
+        align-items: center;
+      }
+
+      .footer-socials {
+        justify-content: center;
+      }
+
+      .footer-bottom {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Header -->
+  <header>
+    <div class="container nav-wrapper">
+      <a href="index.html" class="wordmark">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 5V2" stroke="#FF6B2C" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="12" cy="2" r="1" fill="#FF6B2C"/>
+          <path d="M8 9V7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7V9" stroke="#FF6B2C" stroke-width="2" stroke-linecap="round"/>
+          <rect x="4" y="9" width="16" height="13" rx="3" fill="url(#nav-bag-gradient)"/>
+          <circle cx="9" cy="15" r="1" fill="#FFFFFF"/>
+          <circle cx="15" cy="15" r="1" fill="#FFFFFF"/>
+          <path d="M11 18H13" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="nav-bag-gradient" x1="4" y1="9" x2="20" y2="22" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#FF6B2C"/>
+              <stop offset="1" stop-color="#ff8d5c"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span>Inseller</span>
+      </a>
+      <a href="https://app.inseller.in" class="btn btn-primary">Launch App</a>
+    </div>
+  </header>
+
+  <main class="container content-section">
+    <h1>Terms of Service</h1>
+    <div class="last-updated">Last updated: June 14, 2026</div>
+
+    <h2>1. Acceptance of Terms</h2>
+    <p>By accessing or using the Inseller service, widget, or platform, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our services.</p>
+
+    <h2>2. Description of Service</h2>
+    <p>Inseller provides an AI-powered sales chat widget designed for Shopify stores. The service includes automated customer interactions, product recommendations, email capture, order tracking assistance, and conversation analytics.</p>
+
+    <h2>3. Account Registration</h2>
+    <p>To use Inseller, you must register for an account by connecting your Shopify store. You agree to provide accurate, current, and complete information during registration and to keep this information updated.</p>
+
+    <h2>4. Subscription Plans & Billing</h2>
+    <ul>
+      <li><strong>Free Trial:</strong> We offer a 14-day free trial with no credit card required. At the end of the trial period, you must choose a paid plan or contact sales to continue using the service.</li>
+      <li><strong>Fees:</strong> Subscription plans are billed periodically based on the chosen tier. All payments are processed securely.</li>
+    </ul>
+
+    <h2>5. Data Privacy & Shopify Sync</h2>
+    <p>Inseller syncs with your Shopify store data (including product details and order metadata) to answer customer questions. We handle all store data and shopper conversations in accordance with our Privacy Policy.</p>
+
+    <h2>6. Limitation of Liability</h2>
+    <p>Inseller is provided "as is". We are not liable for any direct, indirect, incidental, or consequential damages resulting from the use or inability to use our services, including but not limited to loss of sales, customer disputes, or data discrepancies.</p>
+
+    <h2>7. Changes to Terms</h2>
+    <p>We reserves the right to modify or replace these terms at any time. We will notify users of any material changes by posting the new terms on this page.</p>
+
+    <h2>8. Contact Us</h2>
+    <p>If you have any questions about these Terms of Service, please contact us at <a href="mailto:team@inseller.in" style="color: var(--accent);">team@inseller.in</a>.</p>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="wordmark">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 5V2" stroke="#FF6B2C" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="12" cy="2" r="1" fill="#FF6B2C"/>
+            <path d="M8 9V7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7V9" stroke="#FF6B2C" stroke-width="2" stroke-linecap="round"/>
+            <rect x="4" y="9" width="16" height="13" rx="3" fill="url(#footer-bag-gradient)"/>
+            <circle cx="9" cy="15" r="1" fill="#FFFFFF"/>
+            <circle cx="15" cy="15" r="1" fill="#FFFFFF"/>
+            <path d="M11 18H13" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"/>
+            <defs>
+              <linearGradient id="footer-bag-gradient" x1="4" y1="9" x2="20" y2="22" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#FF6B2C"/>
+                <stop offset="1" stop-color="#ff8d5c"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <span>Inseller</span>
+        </a>
+        <p class="footer-brand-desc">AI Sales Chat Widget for Shopify Stores</p>
+        <p class="footer-contact-info">
+          <span>Email: <a href="mailto:team@inseller.in">team@inseller.in</a></span><br>
+          <span>Phone: <a href="tel:+917547889854">+91 7547889854</a></span>
+        </p>
+      </div>
+      <div class="footer-links-col">
+        <h4>Product</h4>
+        <a href="index.html#features">Features</a>
+        <a href="index.html#demo">Demo</a>
+        <a href="index.html#pricing">Pricing</a>
+      </div>
+      <div class="footer-links-col">
+        <h4>Legal</h4>
+        <a href="terms.html">Terms of Service</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="refund.html">Refund Policy</a>
+      </div>
+      <div class="footer-links-col">
+        <h4>Socials</h4>
+        <div class="footer-socials">
+          <a href="https://linkedin.com/company/inseller-in/?viewAsMember=true" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="LinkedIn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-linkedin"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+          </a>
+          <a href="https://instagram.com/inseller_in" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Instagram">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-instagram"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <span>© 2026 Inseller. All rights reserved.</span>
+      <span>Built for Shopify stores</span>
+    </div>
+  </footer>
+
+</body>
+</html>

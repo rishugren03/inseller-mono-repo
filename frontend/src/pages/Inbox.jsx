@@ -216,14 +216,26 @@ export default function Inbox() {
   const sidebarRef = useRef(null);
   const pollingRef = useRef(null);
 
+  // Keep mutable refs of values for the background polling to avoid stale closures
+  const conversationsRef = useRef(conversations);
+  conversationsRef.current = conversations;
+
+  const sidebarSearchRef = useRef(sidebarSearch);
+  sidebarSearchRef.current = sidebarSearch;
+
   const handleManualRefresh = async () => {
     if (refreshing || !storeId) return;
     setRefreshing(true);
     try {
-      const data = await fetchJson(`/api/inbox/${storeId}`);
-      const all = data || [];
-      setConversations(all.slice(0, page * PAGE_SIZE));
-      setHasMore(all.length > page * PAGE_SIZE);
+      const queryParams = new URLSearchParams({
+        page: "1",
+        limit: PAGE_SIZE.toString(),
+        search: sidebarSearch,
+      });
+      const data = await fetchJson(`/api/inbox/${storeId}?${queryParams}`);
+      const chats = data || [];
+      setConversations(chats);
+      setHasMore(chats.length === PAGE_SIZE);
 
       if (activeConvId) {
         const chatData = await fetchJson(`/api/chat/${activeConvId}`);
@@ -246,35 +258,84 @@ export default function Inbox() {
       .catch(() => {});
   }, [storeId]);
 
-  const loadConversations = async (reset = false) => {
+  const loadConversations = useCallback(async (reset = false) => {
     if (!storeId) return;
-    if (reset) { setLoading(true); setPage(1); }
+    if (reset) {
+      setPage(1);
+    }
     try {
-      const data = await fetchJson(`/api/inbox/${storeId}`);
-      const all = data || [];
-      setConversations(all.slice(0, PAGE_SIZE));
-      setHasMore(all.length > PAGE_SIZE);
+      const queryParams = new URLSearchParams({
+        page: "1",
+        limit: PAGE_SIZE.toString(),
+        search: sidebarSearch,
+      });
+      const data = await fetchJson(`/api/inbox/${storeId}?${queryParams}`);
+      const chats = data || [];
+      if (reset) {
+        setConversations(chats);
+      } else {
+        setConversations((prev) => {
+          const existingIds = new Set(prev.map((c) => c.id));
+          const newChats = chats.filter((c) => !existingIds.has(c.id));
+          return [...prev, ...newChats];
+        });
+      }
+      setHasMore(chats.length === PAGE_SIZE);
     } catch (err) {
       console.error("Failed to load conversations", err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [storeId, sidebarSearch]);
 
-  const silentRefresh = async () => {
+  const silentRefresh = useCallback(async () => {
     if (!storeId) return;
     try {
-      const data = await fetchJson(`/api/inbox/${storeId}`);
-      const all = data || [];
-      setConversations((prev) => all.slice(0, Math.max(prev.length, PAGE_SIZE)));
+      const queryParams = new URLSearchParams({
+        page: "1",
+        limit: PAGE_SIZE.toString(),
+        search: sidebarSearchRef.current,
+      });
+      const data = await fetchJson(`/api/inbox/${storeId}?${queryParams}`);
+      const chats = data || [];
+      setConversations((prev) => {
+        const chatMap = new Map(chats.map((c) => [c.id, c]));
+        const updatedPrev = prev.map((c) => chatMap.has(c.id) ? chatMap.get(c.id) : c);
+        const existingIds = new Set(prev.map((c) => c.id));
+        const newChats = chats.filter((c) => !existingIds.has(c.id));
+        return [...newChats, ...updatedPrev];
+      });
     } catch (_) {}
-  };
+  }, [storeId]);
+
+  const loadConversationsRef = useRef(loadConversations);
+  loadConversationsRef.current = loadConversations;
+
+  const silentRefreshRef = useRef(silentRefresh);
+  silentRefreshRef.current = silentRefresh;
 
   useEffect(() => {
-    loadConversations(true);
-    pollingRef.current = setInterval(silentRefresh, 4000);
+    loadConversationsRef.current(true);
+    pollingRef.current = setInterval(() => {
+      silentRefreshRef.current();
+    }, 4000);
     return () => clearInterval(pollingRef.current);
   }, [storeId]);
+
+  const isFirstMount = useRef(true);
+
+  // Debounce sidebar search refetch
+  useEffect(() => {
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      return;
+    }
+    const delayDebounceFn = setTimeout(() => {
+      loadConversations(true);
+    }, 300);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [sidebarSearch, loadConversations]);
 
   // Fetch fully-processed conversation (with product images) from /api/chat/:id
   const loadActiveConv = useCallback(async (convId) => {
@@ -310,24 +371,33 @@ export default function Inbox() {
     if (!el || loadingMore || !hasMore) return;
     if (el.scrollTop + el.clientHeight >= el.scrollHeight - 60) {
       setLoadingMore(true);
+      const nextPage = page + 1;
       try {
-        const data = await fetchJson(`/api/inbox/${storeId}`);
-        const all = data || [];
-        const nextPage = page + 1;
-        setConversations(all.slice(0, nextPage * PAGE_SIZE));
-        setHasMore(all.length > nextPage * PAGE_SIZE);
+        const queryParams = new URLSearchParams({
+          page: nextPage.toString(),
+          limit: PAGE_SIZE.toString(),
+          search: sidebarSearch,
+        });
+        const data = await fetchJson(`/api/inbox/${storeId}?${queryParams}`);
+        const chats = data || [];
+        setConversations((prev) => {
+          const existingIds = new Set(prev.map((c) => c.id));
+          const newChats = chats.filter((c) => !existingIds.has(c.id));
+          return [...prev, ...newChats];
+        });
+        setHasMore(chats.length === PAGE_SIZE);
         setPage(nextPage);
       } catch (_) {}
       finally { setLoadingMore(false); }
     }
-  }, [storeId, page, hasMore, loadingMore]);
+  }, [storeId, page, hasMore, loadingMore, sidebarSearch]);
 
   useEffect(() => {
     const el = sidebarRef.current;
     if (!el) return;
     el.addEventListener("scroll", handleSidebarScroll);
     return () => el.removeEventListener("scroll", handleSidebarScroll);
-  }, [handleSidebarScroll]);
+  }, [handleSidebarScroll, loading]);
 
   // Use activeConvData (from /api/chat/:id) for processed messages with images
   // Fall back to sidebar data for metadata (takenOver, visitorName, etc.)
@@ -425,12 +495,7 @@ export default function Inbox() {
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSendMessage(e); }
   };
 
-  const filteredConvs = conversations.filter((c) => {
-    if (!sidebarSearch.trim()) return true;
-    const q = sidebarSearch.toLowerCase();
-    return (c.visitorName || "").toLowerCase().includes(q) ||
-           (c.visitorEmail || "").toLowerCase().includes(q);
-  });
+  const filteredConvs = conversations;
 
   if (!storeId) {
     return (

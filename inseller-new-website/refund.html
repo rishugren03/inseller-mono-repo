@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Refund Policy — Inseller</title>
+  <meta name="description" content="Refund Policy for Inseller AI sales chat widget.">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #0d1117;
+      --border: #1e293b;
+      --accent: #FF6B2C;
+      --accent-hover: #ff7f46;
+      --text-primary: #f1f5f9;
+      --text-muted: #64748b;
+      --font-family: 'Plus Jakarta Sans', sans-serif;
+      --max-width: 800px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      background-color: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font-family);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      min-height: 100vh;
+      line-height: 1.6;
+      padding-top: 120px;
+    }
+
+    .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 100;
+      background-color: rgba(10, 10, 15, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-wrapper {
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1100px;
+    }
+
+    .wordmark {
+      font-size: 20px;
+      font-weight: 600;
+      color: #ffffff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-primary {
+      background-color: var(--accent);
+      color: #ffffff;
+      border: 1px solid var(--accent);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--accent-hover);
+      border-color: var(--accent-hover);
+    }
+
+    /* Content Styling */
+    .content-section {
+      padding: 40px 0 80px 0;
+    }
+
+    h1 {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #ffffff;
+    }
+
+    .last-updated {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 40px;
+    }
+
+    h2 {
+      font-size: 22px;
+      font-weight: 600;
+      margin: 32px 0 16px 0;
+      color: #ffffff;
+    }
+
+    p {
+      color: #cbd5e1;
+      margin-bottom: 16px;
+      font-size: 15px;
+    }
+
+    ul {
+      margin-bottom: 16px;
+      padding-left: 20px;
+      color: #cbd5e1;
+    }
+
+    li {
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+
+    .highlight-box {
+      background-color: rgba(255, 107, 44, 0.08);
+      border-left: 4px solid var(--accent);
+      padding: 20px;
+      border-radius: 6px;
+      margin-bottom: 30px;
+    }
+
+    .highlight-box p {
+      margin-bottom: 0;
+      color: #ffffff;
+      font-weight: 500;
+    }
+
+    /* Footer Styling */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 60px 0 30px 0;
+      background-color: rgba(13, 17, 23, 0.4);
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 40px;
+      font-size: 14px;
+      max-width: 1100px;
+    }
+
+    .footer-brand {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .footer-brand-desc {
+      color: var(--text-muted);
+      max-width: 280px;
+      line-height: 1.5;
+    }
+
+    .footer-contact-info {
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .footer-contact-info a {
+      color: var(--text-primary);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .footer-contact-info a:hover {
+      color: var(--accent);
+    }
+
+    .footer-links-col {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .footer-links-col h4 {
+      color: var(--text-primary);
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .footer-links-col a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .footer-links-col a:hover {
+      color: var(--text-primary);
+    }
+
+    .footer-socials {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .social-link {
+      color: var(--text-muted);
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .social-link:hover {
+      color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: var(--text-muted);
+      max-width: 1100px;
+    }
+
+    @media (max-width: 768px) {
+      .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+        text-align: center;
+      }
+
+      .footer-brand {
+        align-items: center;
+      }
+
+      .footer-links-col {
+        align-items: center;
+      }
+
+      .footer-socials {
+        justify-content: center;
+      }
+
+      .footer-bottom {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Header -->
+  <header>
+    <div class="container nav-wrapper">
+      <a href="index.html" class="wordmark">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 5V2" stroke="#FF6B2C" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="12" cy="2" r="1" fill="#FF6B2C"/>
+          <path d="M8 9V7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7V9" stroke="#FF6B2C" stroke-width="2" stroke-linecap="round"/>
+          <rect x="4" y="9" width="16" height="13" rx="3" fill="url(#nav-bag-gradient)"/>
+          <circle cx="9" cy="15" r="1" fill="#FFFFFF"/>
+          <circle cx="15" cy="15" r="1" fill="#FFFFFF"/>
+          <path d="M11 18H13" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="nav-bag-gradient" x1="4" y1="9" x2="20" y2="22" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#FF6B2C"/>
+              <stop offset="1" stop-color="#ff8d5c"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span>Inseller</span>
+      </a>
+      <a href="https://app.inseller.in" class="btn btn-primary">Launch App</a>
+    </div>
+  </header>
+
+  <main class="container content-section">
+    <h1>Refund Policy</h1>
+    <div class="last-updated">Last updated: June 14, 2026</div>
+
+    <div class="highlight-box">
+      <p>We stand behind the quality of our service. If you are not fully satisfied with your subscription, you are entitled to a full refund within 14 days of your initial purchase.</p>
+    </div>
+
+    <h2>1. Eligibility for Refunds</h2>
+    <p>To request a refund, the following conditions must be met:</p>
+    <ul>
+      <li>Your request must be submitted within 14 days of your initial billing date.</li>
+      <li>Refunds apply to the first billing cycle of any subscription plan. Subsequent renewals are generally non-refundable unless specified otherwise.</li>
+    </ul>
+
+    <h2>2. Processing Refunds</h2>
+    <p>Once your refund request is received and approved, we will process your refund immediately. The credit will automatically be applied to your original payment method (credit card, Shopify billing, or other payment options) within 5-10 business days, depending on your financial institution.</p>
+
+    <h2>3. How to Request a Refund</h2>
+    <p>To submit a refund request, please email us at <a href="mailto:team@inseller.in" style="color: var(--accent); text-decoration: none;">team@inseller.in</a> from your registered Shopify store owner email address. Please include your store URL and account details in the email.</p>
+
+    <h2>4. Abuse of Policy</h2>
+    <p>We reserves the right to refuse refunds to users who abuse this policy (e.g., repeatedly signing up, requesting refunds, and canceling accounts to get free service).</p>
+
+    <h2>5. Contact Us</h2>
+    <p>If you have any questions regarding our Refund Policy, feel free to contact us at <a href="mailto:team@inseller.in" style="color: var(--accent);">team@inseller.in</a> or by calling <a href="tel:+917547889854" style="color: var(--accent);">+91 7547889854</a>.</p>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="wordmark">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 5V2" stroke="#FF6B2C" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="12" cy="2" r="1" fill="#FF6B2C"/>
+            <path d="M8 9V7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7V9" stroke="#FF6B2C" stroke-width="2" stroke-linecap="round"/>
+            <rect x="4" y="9" width="16" height="13" rx="3" fill="url(#footer-bag-gradient)"/>
+            <circle cx="9" cy="15" r="1" fill="#FFFFFF"/>
+            <circle cx="15" cy="15" r="1" fill="#FFFFFF"/>
+            <path d="M11 18H13" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"/>
+            <defs>
+              <linearGradient id="footer-bag-gradient" x1="4" y1="9" x2="20" y2="22" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#FF6B2C"/>
+                <stop offset="1" stop-color="#ff8d5c"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <span>Inseller</span>
+        </a>
+        <p class="footer-brand-desc">AI Sales Chat Widget for Shopify Stores</p>
+        <p class="footer-contact-info">
+          <span>Email: <a href="mailto:team@inseller.in">team@inseller.in</a></span><br>
+          <span>Phone: <a href="tel:+917547889854">+91 7547889854</a></span>
+        </p>
+      </div>
+      <div class="footer-links-col">
+        <h4>Product</h4>
+        <a href="index.html#features">Features</a>
+        <a href="index.html#demo">Demo</a>
+        <a href="index.html#pricing">Pricing</a>
+      </div>
+      <div class="footer-links-col">
+        <h4>Legal</h4>
+        <a href="terms.html">Terms of Service</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="refund.html">Refund Policy</a>
+      </div>
+      <div class="footer-links-col">
+        <h4>Socials</h4>
+        <div class="footer-socials">
+          <a href="https://linkedin.com/company/inseller-in/?viewAsMember=true" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="LinkedIn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-linkedin"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+          </a>
+          <a href="https://instagram.com/inseller_in" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Instagram">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-instagram"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <span>© 2026 Inseller. All rights reserved.</span>
+      <span>Built for Shopify stores</span>
+    </div>
+  </footer>
+
+</body>
+</html>
