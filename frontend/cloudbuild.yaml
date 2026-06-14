@@ -1,0 +1,60 @@
+steps:
+  # Build the frontend image with VITE_ build args passed from substitution variables
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '--build-arg'
+      - 'VITE_API_BASE_URL=$_VITE_API_BASE_URL'
+      - '--build-arg'
+      - 'VITE_FIREBASE_API_KEY=$_VITE_FIREBASE_API_KEY'
+      - '--build-arg'
+      - 'VITE_FIREBASE_AUTH_DOMAIN=$_VITE_FIREBASE_AUTH_DOMAIN'
+      - '--build-arg'
+      - 'VITE_FIREBASE_PROJECT_ID=$_VITE_FIREBASE_PROJECT_ID'
+      - '--build-arg'
+      - 'VITE_FIREBASE_STORAGE_BUCKET=$_VITE_FIREBASE_STORAGE_BUCKET'
+      - '--build-arg'
+      - 'VITE_FIREBASE_MESSAGING_SENDER_ID=$_VITE_FIREBASE_MESSAGING_SENDER_ID'
+      - '--build-arg'
+      - 'VITE_FIREBASE_APP_ID=$_VITE_FIREBASE_APP_ID'
+      - '-t'
+      - '$_IMAGE_NAME:$COMMIT_SHA'
+      - '-f'
+      - 'frontend/Dockerfile'
+      - 'frontend'
+
+  # Push image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', '$_IMAGE_NAME:$COMMIT_SHA']
+
+  # Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'services'
+      - 'update'
+      - '$_SERVICE_NAME'
+      - '--image=$_IMAGE_NAME:$COMMIT_SHA'
+      - '--region=$_REGION'
+      - '--platform=managed'
+      - '--quiet'
+
+images:
+  - '$_IMAGE_NAME:$COMMIT_SHA'
+
+substitutions:
+  _IMAGE_NAME: gcr.io/$PROJECT_ID/inseller-frontend
+  _SERVICE_NAME: inseller-frontend
+  _REGION: us-central1
+  # Override these in Cloud Build trigger substitution variables:
+  _VITE_API_BASE_URL: https://your-backend-url.run.app
+  _VITE_FIREBASE_API_KEY: ''
+  _VITE_FIREBASE_AUTH_DOMAIN: insellerdotin.firebaseapp.com
+  _VITE_FIREBASE_PROJECT_ID: insellerdotin
+  _VITE_FIREBASE_STORAGE_BUCKET: insellerdotin.appspot.com
+  _VITE_FIREBASE_MESSAGING_SENDER_ID: '1005500705645'
+  _VITE_FIREBASE_APP_ID: '1:1005500705645:web:c826a19961f6410c790864'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
