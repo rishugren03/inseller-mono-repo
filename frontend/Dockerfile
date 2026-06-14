@@ -7,17 +7,32 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 
-# Hardcoded production env vars — Vite bakes these into the JS bundle at build time
-ENV VITE_API_BASE_URL=https://inseller-apii-1005500705645.europe-west1.run.app
-ENV VITE_FIREBASE_API_KEY=AIzaSyD7X58imbqc8r_z_RUHUCWzw6-_yHJ9B40
-ENV VITE_FIREBASE_AUTH_DOMAIN=insellerdotin.firebaseapp.com
-ENV VITE_FIREBASE_PROJECT_ID=insellerdotin
-ENV VITE_FIREBASE_STORAGE_BUCKET=insellerdotin.appspot.com
-ENV VITE_FIREBASE_MESSAGING_SENDER_ID=1005500705645
-ENV VITE_FIREBASE_APP_ID=1:1005500705645:web:c826a19961f6410c790864
+# Accept build-args from Cloud Build / docker build --build-arg
+ARG VITE_API_BASE_URL=https://inseller-apii-1005500705645.europe-west1.run.app
+ARG VITE_FIREBASE_API_KEY=AIzaSyD7X58imbqc8r_z_RUHUCWzw6-_yHJ9B40
+ARG VITE_FIREBASE_AUTH_DOMAIN=insellerdotin.firebaseapp.com
+ARG VITE_FIREBASE_PROJECT_ID=insellerdotin
+ARG VITE_FIREBASE_STORAGE_BUCKET=insellerdotin.appspot.com
+ARG VITE_FIREBASE_MESSAGING_SENDER_ID=1005500705645
+ARG VITE_FIREBASE_APP_ID=1:1005500705645:web:c826a19961f6410c790864
 
-# Copy source and build
+# Promote ARGs to ENVs so Vite picks them up during `npm run build`
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+ENV VITE_FIREBASE_API_KEY=$VITE_FIREBASE_API_KEY
+ENV VITE_FIREBASE_AUTH_DOMAIN=$VITE_FIREBASE_AUTH_DOMAIN
+ENV VITE_FIREBASE_PROJECT_ID=$VITE_FIREBASE_PROJECT_ID
+ENV VITE_FIREBASE_STORAGE_BUCKET=$VITE_FIREBASE_STORAGE_BUCKET
+ENV VITE_FIREBASE_MESSAGING_SENDER_ID=$VITE_FIREBASE_MESSAGING_SENDER_ID
+ENV VITE_FIREBASE_APP_ID=$VITE_FIREBASE_APP_ID
+
+# Delete any .env files so they don't interfere with build-arg/ENV values
+# (Vite's .env.production would override ENV vars otherwise)
 COPY . .
+RUN rm -f .env .env.* 
+
+# Debug: verify API key is set (shows first 10 chars only)
+RUN echo "VITE_FIREBASE_API_KEY starts with: ${VITE_FIREBASE_API_KEY:0:10}..."
+
 RUN npm run build
 
 # ── Stage 2: Serve ──────────────────────────────────────────────────────────
