@@ -8,7 +8,7 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 # Accept build-args from Cloud Build / docker build --build-arg
-ARG VITE_API_BASE_URL=https://inseller-apii-1005500705645.europe-west1.run.app
+ARG VITE_API_BASE_URL=https://api.inseller.in
 ARG VITE_FIREBASE_API_KEY=AIzaSyD7X58imbqc8r_z_RUHUCWzw6-_yHJ9B40
 ARG VITE_FIREBASE_AUTH_DOMAIN=insellerdotin.firebaseapp.com
 ARG VITE_FIREBASE_PROJECT_ID=insellerdotin

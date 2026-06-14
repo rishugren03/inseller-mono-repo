@@ -26,7 +26,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
-app.use("/widget", express.static(path.join(__dirname, "../widget")));
+app.use("/widget", express.static(path.join(__dirname, "widget")));
 app.use("/api/auth", requireAuth, authRouter);
 app.use("/api/onboard", requireAuth, onboardRouter);
 app.use("/api/chat", chatRouter);
