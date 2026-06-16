@@ -10,7 +10,7 @@ export function startEmailCron() {
   
   cron.schedule("* * * * *", async () => {
     try {
-      const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+      const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
 
       // Find conversations with email not sent, that have contact details, and are not taken over
       const pendingConversations = await prisma.conversation.findMany({
@@ -36,10 +36,12 @@ export function startEmailCron() {
             ? new Date(lastMsg.timestamp) 
             : new Date(conv.createdAt);
 
-          if (lastMsgTimestamp <= fiveMinutesAgo) {
+          if (lastMsgTimestamp <= oneHourAgo) {
             const senderEmail = process.env.BREVO_SENDER;
             if (senderEmail && conv.store.brevoSender) {
               console.log(`Sending follow-up email to ${conv.visitorEmail} for conversation ${conv.id}...`);
+
+              const senderName = conv.store.botName || "Inseller";
 
               const allProducts = [];
               const seenTitles = new Set();
@@ -73,6 +75,7 @@ export function startEmailCron() {
 
               await sendFollowUpEmail({
                 sender: senderEmail,
+                senderName,
                 replyTo: conv.store.brevoSender,
                 recipient: conv.visitorEmail,
                 subject,

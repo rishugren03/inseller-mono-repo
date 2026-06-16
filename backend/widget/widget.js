@@ -46,24 +46,29 @@
     .ins-message { max-width: 84%; padding: 12px 14px; border-radius: 14px; line-height: 1.5; font-size: 0.94rem; overflow-wrap: anywhere; box-shadow: 0 1px 2px rgba(17,24,39,0.04); }
     .ins-agent, .ins-assistant { align-self: flex-start; background: #ffffff; color: #111827; border: 1px solid #e5e7eb; border-bottom-left-radius: 4px; }
     .ins-user { align-self: flex-end; background: var(--ins-accent, #FF6B2C); color: var(--ins-text-on-accent, #111827); border-bottom-right-radius: 4px; font-weight: 600; }
-    .ins-contact { align-self: stretch; background: #ffffff; color: #111827; border: 1px solid #e5e7eb; border-radius: 14px; padding: 14px; box-shadow: 0 1px 2px rgba(17,24,39,0.04); }
-    .ins-contact label { display:flex; flex-direction:column; gap: 6px; margin-bottom: 12px; color: #374151; font-size: 0.9rem; font-weight: 700; }
-    .ins-contact input { width: 100%; border-radius: 10px; padding: 11px 12px; border: 1px solid #cbd5e1; background:#ffffff; color:#111827; outline: none; }
-    .ins-contact input:focus, .ins-input-row input:focus { border-color: var(--ins-accent, #FF6B2C); box-shadow: 0 0 0 3px rgba(255,107,44,0.16); }
-    .ins-contact-button { display:inline-flex; align-items:center; justify-content:center; border:none; border-radius:10px; padding: 11px 14px; background: var(--ins-accent, #FF6B2C); color: var(--ins-text-on-accent, #111827); cursor:pointer; font-weight: 800; }
+    .ins-contact-dock { background: #ffffff; border-top: 1px solid #e5e7eb; padding: 12px 14px; display: none; flex-direction: column; gap: 8px; }
+    .ins-contact-dock.visible { display: flex; animation: ins-slide-up 0.22s ease; }
+    @keyframes ins-slide-up { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .ins-contact-dock-title { font-size: 0.8rem; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 2px; }
+    .ins-contact-dock-fields { display: flex; gap: 8px; }
+    .ins-contact-dock-fields input { flex: 1; min-width: 0; border-radius: 8px; padding: 9px 10px; border: 1px solid #cbd5e1; background:#ffffff; color:#111827; outline: none; font-size: 0.88rem; font-family: inherit; }
+    .ins-contact-dock-fields input:focus { border-color: var(--ins-accent, #FF6B2C); box-shadow: 0 0 0 3px rgba(255,107,44,0.14); }
+    .ins-contact-dock-fields input::placeholder { color: #9ca3af; }
+    .ins-contact-dock button { border: none; border-radius: 8px; padding: 9px 14px; background: var(--ins-accent, #FF6B2C); color: var(--ins-text-on-accent, #ffffff); cursor: pointer; font-weight: 700; font-size: 0.85rem; white-space: nowrap; font-family: inherit; }
+    .ins-input-row input:focus { border-color: var(--ins-accent, #FF6B2C); box-shadow: 0 0 0 3px rgba(255,107,44,0.16); }
     .ins-product-card { align-self: stretch; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 4px 12px rgba(15,23,42,0.05); margin-top: 8px; flex-shrink: 0; }
-    .ins-product-image-container { width: 100%; height: 150px; background: #f8fafc; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid #f1f5f9; }
+    .ins-product-image-container { width: 100%; height: 110px; background: #f8fafc; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid #f1f5f9; }
     .ins-product-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
     .ins-product-card:hover .ins-product-image { transform: scale(1.03); }
-    .ins-product-image-fallback { font-size: 3rem; color: #94a3b8; user-select: none; }
-    .ins-product-info { padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
-    .ins-product-title { color: #0f172a; font-size: 0.95rem; font-weight: 600; line-height: 1.3; margin: 0; }
-    .ins-product-price { color: #16a34a; font-size: 0.95rem; font-weight: 700; margin: 0; }
-    .ins-product-description { color: #64748b; font-size: 0.82rem; line-height: 1.4; margin: 4px 0 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .ins-product-actions { padding: 0 14px 14px; display: flex; flex-direction: column; gap: 8px; }
-    .ins-product-button-primary { display: inline-flex; align-items: center; justify-content: center; width: 100%; padding: 10px 14px; background: var(--ins-accent, #FF6B2C); color: var(--ins-text-on-accent, #ffffff) !important; border: none; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 0.88rem; cursor: pointer; transition: opacity 0.2s ease; text-align: center; box-shadow: 0 2px 4px rgba(255,107,44,0.15); box-sizing: border-box; }
+    .ins-product-image-fallback { font-size: 2rem; color: #94a3b8; user-select: none; }
+    .ins-product-info { padding: 8px 12px; display: flex; flex-direction: column; gap: 3px; }
+    .ins-product-title { color: #0f172a; font-size: 0.88rem; font-weight: 600; line-height: 1.3; margin: 0; }
+    .ins-product-price { color: #16a34a; font-size: 0.88rem; font-weight: 700; margin: 0; }
+    .ins-product-description { color: #64748b; font-size: 0.78rem; line-height: 1.4; margin: 3px 0 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .ins-product-actions { padding: 0 12px 10px; display: flex; flex-direction: column; gap: 6px; }
+    .ins-product-button-primary { display: inline-flex; align-items: center; justify-content: center; width: 100%; padding: 8px 12px; background: var(--ins-accent, #FF6B2C); color: var(--ins-text-on-accent, #ffffff) !important; border: none; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 0.82rem; cursor: pointer; transition: opacity 0.2s ease; text-align: center; box-shadow: 0 2px 4px rgba(255,107,44,0.15); box-sizing: border-box; }
     .ins-product-button-primary:hover { opacity: 0.92; }
-    .ins-product-button-secondary { display: inline-flex; align-items: center; justify-content: center; width: 100%; padding: 9px 14px; background: #f1f5f9; color: #334155 !important; border: 1px solid #cbd5e1; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 0.88rem; cursor: pointer; transition: background 0.2s ease; text-align: center; box-sizing: border-box; }
+    .ins-product-button-secondary { display: inline-flex; align-items: center; justify-content: center; width: 100%; padding: 7px 12px; background: #f1f5f9; color: #334155 !important; border: 1px solid #cbd5e1; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 0.82rem; cursor: pointer; transition: background 0.2s ease; text-align: center; box-sizing: border-box; }
     .ins-product-button-secondary:hover { background: #e2e8f0; }
     .ins-typing { align-self: flex-start; display:flex; gap:6px; padding:12px 14px; background:#ffffff; border: 1px solid #e5e7eb; border-radius:14px; border-bottom-left-radius: 4px; }
     .ins-dot { width:8px; height:8px; border-radius:50%; background:#6b7280; animation: ins-bounce 0.9s infinite ease-in-out; }
@@ -118,6 +123,14 @@
         </div>
       </div>
       <div class="ins-messages"></div>
+      <div class="ins-contact-dock">
+        <p class="ins-contact-dock-title">Stay in touch 👋</p>
+        <div class="ins-contact-dock-fields">
+          <input type="text" placeholder="Your name" class="ins-dock-name" />
+          <input type="email" placeholder="Email" class="ins-dock-email" />
+          <button type="button" class="ins-dock-save">Save</button>
+        </div>
+      </div>
       <div class="ins-input-row">
         <input type="text" placeholder="Type your message..." aria-label="Type your message" />
         <button type="button">Send</button>
@@ -135,6 +148,10 @@
   const resetBtn = root.querySelector(".ins-reset-button");
   const closeBtn = root.querySelector(".ins-close-button");
   const messagesEl = root.querySelector(".ins-messages");
+  const contactDockEl = root.querySelector(".ins-contact-dock");
+  const dockNameInput = root.querySelector(".ins-dock-name");
+  const dockEmailInput = root.querySelector(".ins-dock-email");
+  const dockSaveBtn = root.querySelector(".ins-dock-save");
   const input = root.querySelector(".ins-input-row input");
   const sendBtn = root.querySelector(".ins-input-row button");
 
@@ -364,37 +381,15 @@
   function showContactBlock() {
     if (state.contactShown) return;
     state.contactShown = true;
-    const block = document.createElement("div");
-    block.className = "ins-contact";
-    block.innerHTML = `
-      <label>
-        Name
-        <input type="text" placeholder="Your name" class="ins-contact-name" />
-      </label>
-      <label>
-        Email
-        <input type="email" placeholder="you@example.com" class="ins-contact-email" />
-      </label>
-      <button type="button" class="ins-contact-button">Save contact</button>
-    `;
-    messagesEl.appendChild(block);
-    messagesEl.scrollTop = messagesEl.scrollHeight;
-    const nameInput = block.querySelector(".ins-contact-name");
-    const emailInput = block.querySelector(".ins-contact-email");
-    const saveButton = block.querySelector(".ins-contact-button");
-    saveButton.addEventListener("click", async () => {
-      const name = nameInput.value.trim() || state.visitorName;
-      const email = emailInput.value.trim() || state.visitorEmail;
+    contactDockEl.classList.add("visible");
+    dockSaveBtn.addEventListener("click", async () => {
+      const name = dockNameInput.value.trim() || state.visitorName;
+      const email = dockEmailInput.value.trim() || state.visitorEmail;
       state.visitorName = name;
       state.visitorEmail = email;
-      block.remove();
-      addMessage(
-        "assistant",
-        "Thanks! I will use that to follow up if needed.",
-      );
+      contactDockEl.classList.remove("visible");
+      addMessage("assistant", "Thanks! I will use that to follow up if needed.");
       messagesEl.scrollTop = messagesEl.scrollHeight;
-
-      // Persist to DB immediately if we already have a conversation
       if (state.conversationId && (name || email)) {
         try {
           await fetch(`${apiBase}/chat/${state.conversationId}/contact`, {
@@ -406,7 +401,7 @@
           console.error("Failed to save contact info", err);
         }
       }
-    });
+    }, { once: true });
   }
 
   async function loadConfig() {
@@ -475,6 +470,9 @@
         state.takenOver = false;
         stopPolling();
         messagesEl.innerHTML = "";
+        contactDockEl.classList.remove("visible");
+        dockNameInput.value = "";
+        dockEmailInput.value = "";
         addMessage("assistant", greetingMsg);
       });
 

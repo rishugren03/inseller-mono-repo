@@ -4,6 +4,7 @@ dotenv.config();
 
 export async function sendFollowUpEmail({
   sender,
+  senderName,
   replyTo,
   recipient,
   subject,
@@ -15,7 +16,7 @@ export async function sendFollowUpEmail({
   }
 
   const payload = {
-    sender: { email: sender },
+    sender: { email: sender, name: senderName || "Inseller" },
     to: [{ email: recipient }],
     subject,
     htmlContent: html,

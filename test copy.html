@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inseller Widget Test</title>
+    <style>
+      :root {
+        color: #182033;
+        background: #f6f7fb;
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-height: 100vh;
+        margin: 0;
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      .page {
+        min-height: 100vh;
+        display: grid;
+        grid-template-rows: auto 1fr;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        padding: 18px clamp(18px, 5vw, 56px);
+        background: #ffffff;
+        border-bottom: 1px solid #dfe4ee;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+      }
+
+      .brand-mark {
+        width: 34px;
+        height: 34px;
+        display: grid;
+        place-items: center;
+        border-radius: 8px;
+        background: #182033;
+        color: #ffffff;
+        font-weight: 800;
+      }
+
+      .brand strong {
+        display: block;
+        color: #101828;
+      }
+
+      .brand span {
+        display: block;
+        color: #667085;
+        font-size: 0.9rem;
+      }
+
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #344054;
+        font-size: 0.92rem;
+      }
+
+      .status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #f79009;
+      }
+
+      .status-dot.ready {
+        background: #12b76a;
+      }
+
+      main {
+        width: min(1120px, calc(100% - 36px));
+        margin: 0 auto;
+        padding: 34px 0 72px;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 360px;
+        gap: 24px;
+        align-items: start;
+      }
+
+      .hero {
+        min-height: 420px;
+        display: grid;
+        align-content: end;
+        padding: clamp(24px, 5vw, 48px);
+        border-radius: 8px;
+        background:
+          linear-gradient(rgba(16, 24, 40, 0.18), rgba(16, 24, 40, 0.58)),
+          url("https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1400&q=80")
+            center/cover;
+        color: #ffffff;
+      }
+
+      .hero h1 {
+        max-width: 660px;
+        margin: 0;
+        font-size: clamp(2.2rem, 5vw, 4.5rem);
+        line-height: 0.95;
+        letter-spacing: 0;
+      }
+
+      .hero p {
+        max-width: 560px;
+        margin: 18px 0 0;
+        color: rgba(255, 255, 255, 0.88);
+        font-size: 1.05rem;
+        line-height: 1.6;
+      }
+
+      .products {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 18px;
+      }
+
+      .product {
+        min-height: 168px;
+        display: grid;
+        align-content: end;
+        padding: 18px;
+        border: 1px solid #dfe4ee;
+        border-radius: 8px;
+        background: #ffffff;
+      }
+
+      .product small {
+        color: #667085;
+      }
+
+      .product strong {
+        margin-top: 6px;
+        color: #101828;
+      }
+
+      .panel {
+        position: sticky;
+        top: 18px;
+        padding: 20px;
+        border: 1px solid #dfe4ee;
+        border-radius: 8px;
+        background: #ffffff;
+        box-shadow: 0 18px 45px rgba(16, 24, 40, 0.08);
+      }
+
+      .panel h2 {
+        margin: 0 0 14px;
+        color: #101828;
+        font-size: 1.15rem;
+      }
+
+      .field {
+        display: grid;
+        gap: 7px;
+        margin-bottom: 14px;
+      }
+
+      .field label {
+        color: #344054;
+        font-size: 0.9rem;
+        font-weight: 700;
+      }
+
+      .field input {
+        width: 100%;
+        min-width: 0;
+        padding: 11px 12px;
+        border: 1px solid #ccd4e0;
+        border-radius: 8px;
+        color: #101828;
+        background: #ffffff;
+      }
+
+      .actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 16px;
+      }
+
+      .actions button {
+        min-height: 42px;
+        border: 0;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 800;
+      }
+
+      .primary {
+        color: #ffffff;
+        background: #182033;
+      }
+
+      .secondary {
+        color: #182033;
+        background: #eef2f7;
+      }
+
+      .hint,
+      .log {
+        color: #667085;
+        font-size: 0.88rem;
+        line-height: 1.5;
+      }
+
+      .log {
+        min-height: 44px;
+        margin: 16px 0 0;
+        padding: 12px;
+        border-radius: 8px;
+        background: #f2f4f7;
+      }
+
+      @media (max-width: 860px) {
+        .topbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .layout,
+        .products {
+          grid-template-columns: 1fr;
+        }
+
+        .panel {
+          position: static;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark">I</span>
+          <div>
+            <strong>Inseller Widget Test</strong>
+            <span>Local storefront harness</span>
+          </div>
+        </div>
+        <div class="status" aria-live="polite">
+          <span class="status-dot" id="statusDot"></span>
+          <span id="statusText">Waiting to load widget</span>
+        </div>
+      </header>
+
+      <main>
+        <div class="layout">
+          <section>
+            <div class="hero">
+              <div>
+                <h1>Everyday goods, styled for checkout.</h1>
+                <p>
+                  Use this page like a merchant storefront. The Inseller chat
+                  widget should appear at the bottom-right once the backend is
+                  running and the store id exists.
+                </p>
+              </div>
+            </div>
+
+            <div class="products" aria-label="Demo products">
+              <article class="product">
+                <small>New arrival</small>
+                <strong>Canvas Weekender Bag</strong>
+              </article>
+              <article class="product">
+                <small>Best seller</small>
+                <strong>Everyday Cotton Shirt</strong>
+              </article>
+              <article class="product">
+                <small>Limited</small>
+                <strong>Minimal Desk Lampp</strong>
+              </article>
+            </div>
+          </section>
+
+          <aside class="panel" aria-label="Widget controls">
+            <h2>Widget Controls</h2>
+            <div class="field">
+              <label for="backendUrl">Backend URL</label>
+              <input id="backendUrl" type="url" value="http://localhost:3000" />
+            </div>
+            <div class="field">
+              <label for="storeId">Store ID</label>
+              <input
+                id="storeId"
+                type="text"
+                value="45eb9546-c554-426c-8a60-9e829d461a37"
+              />
+            </div>
+            <p class="hint">
+              Start the backend with <strong>npm run dev</strong> from the
+              backend folder, then load or reload the widget here.
+            </p>
+            <div class="actions">
+              <button type="button" class="primary" id="loadWidget">
+                Load
+              </button>
+              <button type="button" class="secondary" id="resetWidget">
+                Reset
+              </button>
+            </div>
+            <p class="log" id="log">No widget script has been injected yet.</p>
+          </aside>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      const backendInput = document.getElementById("backendUrl");
+      const storeInput = document.getElementById("storeId");
+      const loadButton = document.getElementById("loadWidget");
+      const resetButton = document.getElementById("resetWidget");
+      const statusDot = document.getElementById("statusDot");
+      const statusText = document.getElementById("statusText");
+      const log = document.getElementById("log");
+
+      const params = new URLSearchParams(window.location.search);
+      const backendParam = params.get("backend");
+      const storeParam = params.get("storeId");
+
+      if (backendParam) backendInput.value = backendParam;
+      if (storeParam) storeInput.value = storeParam;
+
+      function setStatus(message, ready) {
+        statusText.textContent = message;
+        statusDot.classList.toggle("ready", Boolean(ready));
+        log.textContent = message;
+      }
+
+      function removeWidget() {
+        document
+          .querySelectorAll(
+            "#inseller-test-script, .ins-widget-root, #ins-styles",
+          )
+          .forEach((element) => element.remove());
+      }
+
+      function loadWidget() {
+        removeWidget();
+
+        const backendUrl = backendInput.value.trim().replace(/\/+$/, "");
+        const storeId = storeInput.value.trim();
+
+        if (!backendUrl || !storeId) {
+          setStatus("Enter both a backend URL and store id.", false);
+          return;
+        }
+
+        const script = document.createElement("script");
+        script.id = "inseller-test-script";
+        script.src = `${backendUrl}/widget/widget.js`;
+        script.dataset.storeId = storeId;
+        script.async = true;
+        script.onload = () => {
+          setStatus(`Widget script loaded from ${script.src}`, true);
+        };
+        script.onerror = () => {
+          setStatus(`Could not load ${script.src}`, false);
+        };
+
+        document.body.appendChild(script);
+        setStatus("Injecting widget script...", false);
+      }
+
+      loadButton.addEventListener("click", loadWidget);
+      resetButton.addEventListener("click", () => {
+        removeWidget();
+        sessionStorage.clear();
+        setStatus("Widget removed and session storage cleared.", false);
+      });
+
+      loadWidget();
+    </script>
+  </body>
+</html>
