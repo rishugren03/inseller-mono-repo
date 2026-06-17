@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopify Customer Support Chatbot — Automate FAQs & Orders | Inseller</title>
+  <meta name="description" content="Reduce support tickets by 70% with a conversational AI chatbot for your Shopify store. Handle order tracking, product FAQs, and returns instantly 24/7.">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ----------------------------------------------------
+       Design System & Variables
+       ---------------------------------------------------- */
+    :root {
+      --bg: #0a0a0f;
+      --surface: #0d1117;
+      --border: #1e293b;
+      --accent: #FF6B2C;
+      --accent-hover: #ff7f46;
+      --text-primary: #f1f5f9;
+      --text-muted: #64748b;
+      --font-family: 'Plus Jakarta Sans', sans-serif;
+      --max-width: 1100px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background-color: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font-family);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      overflow-x: hidden;
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--accent);
+    }
+
+    .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    section {
+      padding: 100px 0;
+      position: relative;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: var(--transition);
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background-color: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent);
+      box-shadow: 0 4px 12px rgba(255, 107, 44, 0.15);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--accent-hover);
+      border-color: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(255, 107, 44, 0.3);
+    }
+
+    .btn-ghost {
+      background-color: transparent;
+      color: var(--text-primary);
+      border-color: var(--border);
+    }
+
+    .btn-ghost:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-color: var(--text-muted);
+    }
+
+    /* Header */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 100;
+      background-color: rgba(10, 10, 15, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      transition: var(--transition);
+    }
+
+    .nav-wrapper {
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .wordmark {
+      font-size: 20px;
+      font-weight: 600;
+      color: #ffffff;
+      text-decoration: none;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Hero */
+    #hero {
+      padding-top: 180px;
+      padding-bottom: 80px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .hero-eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+    }
+
+    .hero-title {
+      font-size: 48px;
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -1.5px;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+    }
+
+    .hero-subtext {
+      font-size: 18px;
+      line-height: 1.6;
+      color: var(--text-muted);
+      margin-bottom: 36px;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    /* Features / Benefits */
+    .section-title-wrap {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .section-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.5px;
+    }
+
+    .section-subtitle {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .feature-card {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 32px;
+      transition: var(--transition);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 107, 44, 0.2);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .feature-icon {
+      font-size: 24px;
+      margin-bottom: 16px;
+      display: inline-block;
+    }
+
+    .feature-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+
+    .feature-desc {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-muted);
+    }
+
+    /* Use Cases list */
+    #use-cases {
+      background: rgba(13, 17, 23, 0.4);
+    }
+
+    .use-cases-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .cases-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .case-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .case-check {
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 18px;
+      line-height: 1.4;
+    }
+
+    .case-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .case-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Mockup Widget styling */
+    .widget-mockup {
+      width: 100%;
+      max-width: 360px;
+      height: 520px;
+      background-color: #0a0f1e;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
+      margin: 0 auto;
+    }
+
+    .widget-header {
+      background-color: rgba(10, 15, 30, 0.85);
+      border-bottom: 1px solid var(--border);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .widget-avatar {
+      width: 32px;
+      height: 32px;
+      background-color: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .widget-header-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .widget-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .widget-status {
+      font-size: 10px;
+      color: #10b981;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .widget-status::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background-color: #10b981;
+      border-radius: 50%;
+    }
+
+    .widget-body {
+      flex: 1;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overflow-y: auto;
+    }
+
+    .msg {
+      max-width: 85%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .msg.agent {
+      background-color: #1e293b;
+      color: var(--text-primary);
+      align-self: flex-start;
+      border-bottom-left-radius: 2px;
+    }
+
+    .msg.user {
+      background-color: var(--accent);
+      color: #ffffff;
+      align-self: flex-end;
+      border-bottom-right-radius: 2px;
+    }
+
+    /* CTA Section */
+    #cta-banner-section {
+      text-align: center;
+    }
+
+    .cta-banner {
+      background: linear-gradient(135deg, rgba(255, 107, 44, 0.15) 0%, rgba(10, 10, 15, 0) 100%);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 80px 40px;
+    }
+
+    .cta-title {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .cta-desc {
+      font-size: 16px;
+      color: var(--text-muted);
+      max-width: 500px;
+      margin: 0 auto 32px auto;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 60px 0 30px 0;
+      background-color: rgba(13, 17, 23, 0.4);
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1.2fr 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 40px;
+      font-size: 14px;
+    }
+
+    .footer-brand {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .footer-brand-desc {
+      color: var(--text-muted);
+      max-width: 280px;
+      line-height: 1.5;
+    }
+
+    .footer-contact-info {
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .footer-contact-info a {
+      color: var(--text-primary);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .footer-contact-info a:hover {
+      color: var(--accent);
+    }
+
+    .footer-links-col {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .footer-links-col h4 {
+      color: var(--text-primary);
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .footer-links-col a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .footer-links-col a:hover {
+      color: var(--text-primary);
+    }
+
+    .footer-socials {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .social-link {
+      color: var(--text-muted);
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .social-link:hover {
+      color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+        text-align: center;
+      }
+      .hero-ctas {
+        justify-content: center;
+      }
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+      .use-cases-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+      .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+        text-align: center;
+      }
+      .footer-brand {
+        align-items: center;
+      }
+      .footer-links-col {
+        align-items: center;
+      }
+      .footer-socials {
+        justify-content: center;
+      }
+      .footer-bottom {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container nav-wrapper">
+      <a href="index.html" class="wordmark">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 5V2" stroke="#FF6B2C" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="12" cy="2" r="1" fill="#FF6B2C"/>
+          <path d="M8 9V7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7V9" stroke="#FF6B2C" stroke-width="2" stroke-linecap="round"/>
+          <rect x="4" y="9" width="16" height="13" rx="3" fill="url(#nav-bag-gradient)"/>
+          <circle cx="9" cy="15" r="1" fill="#FFFFFF"/>
+          <circle cx="15" cy="15" r="1" fill="#FFFFFF"/>
+          <path d="M11 18H13" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="nav-bag-gradient" x1="4" y1="9" x2="20" y2="22" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#FF6B2C"/>
+              <stop offset="1" stop-color="#ff8d5c"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span>Inseller</span>
+      </a>
+      <a href="https://app.inseller.in" class="btn btn-primary">Start Free Trial</a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section id="hero">
+    <div class="container hero-grid">
+      <div>
+        <div class="hero-eyebrow">Shopify Customer Support</div>
+        <h1 class="hero-title">Automate E-commerce Support with a Smart Shopify Chatbot</h1>
+        <p class="hero-subtext">Reduce support ticket volume by up to 70%. Let conversational AI handle tracking numbers, FAQ queries, returns policy questions, and pre-sales assistance 24 hours a day.</p>
+        <div class="hero-ctas">
+          <a href="https://app.inseller.in" class="btn btn-primary">Try Inseller Free</a>
+          <a href="index.html#demo" class="btn btn-ghost">View Features</a>
+        </div>
+      </div>
+      <div>
+        <!-- Mockup chat widget simulator -->
+        <div class="widget-mockup">
+          <div class="widget-header">
+            <div class="widget-avatar">AI</div>
+            <div class="widget-header-text">
+              <span class="widget-name">Inseller Agent</span>
+              <span class="widget-status">Online • Syncing Orders</span>
+            </div>
+          </div>
+          <div class="widget-body">
+            <div class="msg agent">Hello! Need help tracking your order or checking a store policy? 📦</div>
+            <div class="msg user">Hi, can I check the status of my order #10842?</div>
+            <div class="msg agent">Checking your order... 🔎</div>
+            <div class="msg agent">Your order #10842 was shipped via FedEx and is currently <strong>Out for Delivery</strong> today by 5:00 PM.</div>
+            <div class="msg agent">Tracking Link: <a href="#" style="color: var(--accent); text-decoration: underline;">fedex.com/track/10842</a></div>
+            <div class="msg user">Awesome, thanks! What is your return policy if it doesn't fit?</div>
+            <div class="msg agent">We offer a 14-day hassle-free return policy. You can register returns directly in our returns center.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Key Benefits -->
+  <section id="benefits">
+    <div class="container">
+      <div class="section-title-wrap">
+        <h2 class="section-title">Automate Support Without Losing the Personal Touch</h2>
+        <p class="section-subtitle">Let AI handle the routine queries so your support team can focus on complex tasks.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <span class="feature-icon">🚚</span>
+          <h3 class="feature-title">Live Order & Shipping Queries</h3>
+          <p class="feature-desc">By syncing with Shopify's tracking metadata, Inseller answers the most common support query—"Where is my order?"—instantly without requiring human intervention.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">📝</span>
+          <h3 class="feature-title">FAQ Knowledge Base Integration</h3>
+          <p class="feature-desc">Simply upload your store's return guidelines, shipping rules, and sizing guides. Our AI agent ingests the content and responds to customer questions accurately.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">📥</span>
+          <h3 class="feature-title">Intelligent Ticket Escalation</h3>
+          <p class="feature-desc">When a question is too complex, Inseller automatically logs customer contact details and transfers the query to your existing helpdesk email inbox with transcripts.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Use cases section -->
+  <section id="use-cases">
+    <div class="container use-cases-grid">
+      <div>
+        <h2 class="section-title" style="text-align: left; margin-bottom: 24px;">How Inseller Answers E-commerce FAQs Instantly</h2>
+        <p style="color: var(--text-muted); font-size: 16px; margin-bottom: 32px; line-height: 1.6;">Our AI isn't a basic text matches searcher. It understands natural context, shopper intent, and store specific logistics to offer natural assistance.</p>
+        <a href="https://app.inseller.in" class="btn btn-primary">Start Automating Support</a>
+      </div>
+      <div>
+        <ul class="cases-list">
+          <li class="case-item">
+            <span class="case-check">✓</span>
+            <div>
+              <h3 class="case-title">Sizing & Fit Advice</h3>
+              <p class="case-desc">"I am 6'1", what size jacket would fit best?" Inseller inspects product charts to advise correct sizing.</p>
+            </div>
+          </li>
+          <li class="case-item">
+            <span class="case-check">✓</span>
+            <div>
+              <h3 class="case-title">Shipping Timelines</h3>
+              <p class="case-desc">"Do you ship to Germany and how long does it take?" Answers with country-specific rules instantly.</p>
+            </div>
+          </li>
+          <li class="case-item">
+            <span class="case-check">✓</span>
+            <div>
+              <h3 class="case-title">Return & Exchange Window</h3>
+              <p class="case-desc">"Can I return an item after 10 days?" Verifies policy conditions in the database.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA banner -->
+  <section id="cta-banner-section">
+    <div class="container">
+      <div class="cta-banner">
+        <h2 class="cta-title">Drastically Reduce Your Customer Support Load</h2>
+        <p class="cta-desc">Save hours of manual agent work and respond to shoppers in under a second. Try Inseller today.</p>
+        <a href="https://app.inseller.in" class="btn btn-primary">Get 14 Days Free</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="wordmark">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 5V2" stroke="#FF6B2C" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="12" cy="2" r="1" fill="#FF6B2C"/>
+            <path d="M8 9V7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7V9" stroke="#FF6B2C" stroke-width="2" stroke-linecap="round"/>
+            <rect x="4" y="9" width="16" height="13" rx="3" fill="url(#footer-bag-gradient)"/>
+            <circle cx="9" cy="15" r="1" fill="#FFFFFF"/>
+            <circle cx="15" cy="15" r="1" fill="#FFFFFF"/>
+            <path d="M11 18H13" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"/>
+            <defs>
+              <linearGradient id="footer-bag-gradient" x1="4" y1="9" x2="20" y2="22" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#FF6B2C"/>
+                <stop offset="1" stop-color="#ff8d5c"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <span>Inseller</span>
+        </a>
+        <p class="footer-brand-desc">AI Sales Chat Widget for Shopify Stores</p>
+        <p class="footer-contact-info">
+          <span>Email: <a href="mailto:team@inseller.in">team@inseller.in</a></span><br>
+          <span>Phone: <a href="tel:+917547889854">+91 7547889854</a></span>
+        </p>
+      </div>
+      <div class="footer-links-col">
+        <h4>Product</h4>
+        <a href="index.html#features">Features</a>
+        <a href="index.html#demo">Demo</a>
+        <a href="index.html#pricing">Pricing</a>
+      </div>
+      <div class="footer-links-col">
+        <h4>Solutions</h4>
+        <a href="shopify-ai-sales-assistant.html">AI Sales Assistant</a>
+        <a href="shopify-customer-support-chatbot.html">Support Chatbot</a>
+        <a href="boost-shopify-conversion-rate.html">Boost Conversions</a>
+      </div>
+      <div class="footer-links-col">
+        <h4>Legal</h4>
+        <a href="terms.html">Terms of Service</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="refund.html">Refund Policy</a>
+        <a href="sitemap.html">Sitemap</a>
+      </div>
+      <div class="footer-links-col">
+        <h4>Socials</h4>
+        <div class="footer-socials">
+          <a href="https://linkedin.com/company/inseller-in/?viewAsMember=true" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="LinkedIn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-linkedin"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+          </a>
+          <a href="https://instagram.com/inseller_in" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Instagram">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-instagram"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <span>© 2026 Codewave Labs. All rights reserved. Inseller is a product of Codewave Labs.</span>
+      <span>Built for Shopify stores</span>
+    </div>
+  </footer>
+
+</body>
+</html>

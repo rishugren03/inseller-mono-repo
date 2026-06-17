@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopify AI Sales Assistant — Boost Conversions | Inseller</title>
+  <meta name="description" content="Deploy an AI sales agent on your Shopify store. Answer questions in 95+ languages, recommend products, capture emails, and follow up automatically to increase conversions.">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ----------------------------------------------------
+       Design System & Variables
+       ---------------------------------------------------- */
+    :root {
+      --bg: #0a0a0f;
+      --surface: #0d1117;
+      --border: #1e293b;
+      --accent: #FF6B2C;
+      --accent-hover: #ff7f46;
+      --text-primary: #f1f5f9;
+      --text-muted: #64748b;
+      --font-family: 'Plus Jakarta Sans', sans-serif;
+      --max-width: 1100px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background-color: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font-family);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      overflow-x: hidden;
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--accent);
+    }
+
+    .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    section {
+      padding: 100px 0;
+      position: relative;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: var(--transition);
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background-color: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent);
+      box-shadow: 0 4px 12px rgba(255, 107, 44, 0.15);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--accent-hover);
+      border-color: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(255, 107, 44, 0.3);
+    }
+
+    .btn-ghost {
+      background-color: transparent;
+      color: var(--text-primary);
+      border-color: var(--border);
+    }
+
+    .btn-ghost:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-color: var(--text-muted);
+    }
+
+    /* Header */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 100;
+      background-color: rgba(10, 10, 15, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      transition: var(--transition);
+    }
+
+    .nav-wrapper {
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .wordmark {
+      font-size: 20px;
+      font-weight: 600;
+      color: #ffffff;
+      text-decoration: none;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Hero */
+    #hero {
+      padding-top: 180px;
+      padding-bottom: 80px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .hero-eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+    }
+
+    .hero-title {
+      font-size: 48px;
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -1.5px;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+    }
+
+    .hero-subtext {
+      font-size: 18px;
+      line-height: 1.6;
+      color: var(--text-muted);
+      margin-bottom: 36px;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    /* Features / Benefits */
+    .section-title-wrap {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .section-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.5px;
+    }
+
+    .section-subtitle {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .feature-card {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 32px;
+      transition: var(--transition);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 107, 44, 0.2);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .feature-icon {
+      font-size: 24px;
+      margin-bottom: 16px;
+      display: inline-block;
+    }
+
+    .feature-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+
+    .feature-desc {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-muted);
+    }
+
+    /* Comparison Table Section */
+    #comparison {
+      background: rgba(13, 17, 23, 0.4);
+    }
+
+    .comparison-table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 15px;
+    }
+
+    .comparison-table th, .comparison-table td {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .comparison-table th {
+      background: rgba(255, 107, 44, 0.05);
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .comparison-table td {
+      color: #cbd5e1;
+    }
+
+    .comparison-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .check-yes {
+      color: #10b981;
+      font-weight: bold;
+    }
+
+    .check-no {
+      color: #ef4444;
+      font-weight: bold;
+    }
+
+    /* Mockup Widget styling */
+    .widget-mockup {
+      width: 100%;
+      max-width: 360px;
+      height: 520px;
+      background-color: #0a0f1e;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
+      margin: 0 auto;
+    }
+
+    .widget-header {
+      background-color: rgba(10, 15, 30, 0.85);
+      border-bottom: 1px solid var(--border);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .widget-avatar {
+      width: 32px;
+      height: 32px;
+      background-color: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .widget-header-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .widget-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .widget-status {
+      font-size: 10px;
+      color: #10b981;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .widget-status::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background-color: #10b981;
+      border-radius: 50%;
+    }
+
+    .widget-body {
+      flex: 1;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overflow-y: auto;
+    }
+
+    .msg {
+      max-width: 85%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .msg.agent {
+      background-color: #1e293b;
+      color: var(--text-primary);
+      align-self: flex-start;
+      border-bottom-left-radius: 2px;
+    }
+
+    .msg.user {
+      background-color: var(--accent);
+      color: #ffffff;
+      align-self: flex-end;
+      border-bottom-right-radius: 2px;
+    }
+
+    .msg-product-card {
+      background: #0d1829;
+      border: 1px solid #1e3050;
+      border-radius: 10px;
+      overflow: hidden;
+      width: 200px;
+      align-self: flex-start;
+    }
+
+    .msg-product-img {
+      width: 100%;
+      height: 86px;
+      background: linear-gradient(135deg, #1a3a5c 0%, #0d2040 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 38px;
+    }
+
+    .msg-product-body {
+      padding: 10px 12px;
+    }
+
+    .msg-product-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 4px;
+    }
+
+    .msg-product-price {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .msg-product-btn {
+      width: 100%;
+      padding: 7px;
+      background: var(--accent);
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* CTA Section */
+    #cta-banner-section {
+      text-align: center;
+    }
+
+    .cta-banner {
+      background: linear-gradient(135deg, rgba(255, 107, 44, 0.15) 0%, rgba(10, 10, 15, 0) 100%);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 80px 40px;
+    }
+
+    .cta-title {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .cta-desc {
+      font-size: 16px;
+      color: var(--text-muted);
+      max-width: 500px;
+      margin: 0 auto 32px auto;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 60px 0 30px 0;
+      background-color: rgba(13, 17, 23, 0.4);
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1.2fr 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 40px;
+      font-size: 14px;
+    }
+
+    .footer-brand {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .footer-brand-desc {
+      color: var(--text-muted);
+      max-width: 280px;
+      line-height: 1.5;
+    }
+
+    .footer-contact-info {
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .footer-contact-info a {
+      color: var(--text-primary);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .footer-contact-info a:hover {
+      color: var(--accent);
+    }
+
+    .footer-links-col {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .footer-links-col h4 {
+      color: var(--text-primary);
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .footer-links-col a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .footer-links-col a:hover {
+      color: var(--text-primary);
+    }
+
+    .footer-socials {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .social-link {
+      color: var(--text-muted);
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .social-link:hover {
+      color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+        text-align: center;
+      }
+      .hero-ctas {
+        justify-content: center;
+      }
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+      .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+        text-align: center;
+      }
+      .footer-brand {
+        align-items: center;
+      }
+      .footer-links-col {
+        align-items: center;
+      }
+      .footer-socials {
+        justify-content: center;
+      }
+      .footer-bottom {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container nav-wrapper">
+      <a href="index.html" class="wordmark">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 5V2" stroke="#FF6B2C" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="12" cy="2" r="1" fill="#FF6B2C"/>
+          <path d="M8 9V7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7V9" stroke="#FF6B2C" stroke-width="2" stroke-linecap="round"/>
+          <rect x="4" y="9" width="16" height="13" rx="3" fill="url(#nav-bag-gradient)"/>
+          <circle cx="9" cy="15" r="1" fill="#FFFFFF"/>
+          <circle cx="15" cy="15" r="1" fill="#FFFFFF"/>
+          <path d="M11 18H13" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="nav-bag-gradient" x1="4" y1="9" x2="20" y2="22" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#FF6B2C"/>
+              <stop offset="1" stop-color="#ff8d5c"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span>Inseller</span>
+      </a>
+      <a href="https://app.inseller.in" class="btn btn-primary">Start Free Trial</a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section id="hero">
+    <div class="container hero-grid">
+      <div>
+        <div class="hero-eyebrow">Shopify E-commerce Solution</div>
+        <h1 class="hero-title">Turn Store Visitors Into Customers With a Shopify AI Sales Assistant</h1>
+        <p class="hero-subtext">Put a 24/7 autonomous sales agent on your Shopify store. Answer shopper questions, recommend the right products, capture high-quality leads, and recover abandoned chats in any language.</p>
+        <div class="hero-ctas">
+          <a href="https://app.inseller.in" class="btn btn-primary">Install Free on Shopify</a>
+          <a href="index.html#demo" class="btn btn-ghost">See Live Demo</a>
+        </div>
+      </div>
+      <div>
+        <!-- Mockup chat widget simulator -->
+        <div class="widget-mockup">
+          <div class="widget-header">
+            <div class="widget-avatar">AI</div>
+            <div class="widget-header-text">
+              <span class="widget-name">Inseller Agent</span>
+              <span class="widget-status">Online • Syncing Catalog</span>
+            </div>
+          </div>
+          <div class="widget-body">
+            <div class="msg agent">Hi there! What kind of product are you looking for today? 🛍️</div>
+            <div class="msg user">I need running shoes that have good arch support and cushioning.</div>
+            <div class="msg agent">I've got the perfect match! Here is our top-rated cushioned sneaker:</div>
+            <div class="msg-product-card">
+              <div class="msg-product-img">👟</div>
+              <div class="msg-product-body">
+                <div class="msg-product-name">Apex Float Running Shoes</div>
+                <div class="msg-product-price">$120.00</div>
+                <button class="msg-product-btn">Add to Cart</button>
+              </div>
+            </div>
+            <div class="msg agent">Would you like to check what sizes we have in stock?</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Key Benefits -->
+  <section id="benefits">
+    <div class="container">
+      <div class="section-title-wrap">
+        <h2 class="section-title">Why E-commerce Stores Need an AI Sales Agent</h2>
+        <p class="section-subtitle">Supercharge your conversion rates and provide personalized shopping experiences at scale.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <span class="feature-icon">✨</span>
+          <h3 class="feature-title">Personalized Recommendations</h3>
+          <p class="feature-desc">Instead of forcing users to dig through complex category filters, Inseller learns their preferences from natural chat dialog and displays product cards matching their intent.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">💬</span>
+          <h3 class="feature-title">95+ Multilingual Sales</h3>
+          <p class="feature-desc">Sell globally with zero language barriers. Inseller instantly translates, queries, and responds to messages in Spanish, French, German, Japanese, Hindi, and dozens more.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">⚡</span>
+          <h3 class="feature-title">In-Chat Lead Capture</h3>
+          <p class="feature-desc">Capture emails and contact details natively inside the chat bubble. Automatically follow up with prospects who left items in cart or ended the conversation.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Comparison Section -->
+  <section id="comparison">
+    <div class="container">
+      <div class="section-title-wrap">
+        <h2 class="section-title">Standard Chatbots vs. Inseller AI Sales Assistant</h2>
+        <p class="section-subtitle">How Inseller goes beyond standard pre-programmed buttons to drive sales conversions.</p>
+      </div>
+      <div class="comparison-table-wrap">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Features</th>
+              <th>Static Rules-Based Bots</th>
+              <th>Inseller AI Sales Agent</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Conversational Flow</td>
+              <td>Rigid decision trees & buttons only</td>
+              <td>Flexible, natural human-like dialog</td>
+            </tr>
+            <tr>
+              <td>Shopify Catalog Sync</td>
+              <td>Manual entry of links & images</td>
+              <td>Automatic real-time Shopify inventory sync</td>
+            </tr>
+            <tr>
+              <td>Interactive Product Cards</td>
+              <td><span class="check-no">✗</span> No</td>
+              <td><span class="check-yes">✓</span> Yes (with direct Add to Cart buttons)</td>
+            </tr>
+            <tr>
+              <td>Multi-Language Support</td>
+              <td>Requires separate manual scripts</td>
+              <td><span class="check-yes">✓</span> Auto-detect & translate (95+ languages)</td>
+            </tr>
+            <tr>
+              <td>Email Follow-ups</td>
+              <td><span class="check-no">✗</span> No</td>
+              <td><span class="check-yes">✓</span> Automated post-chat reactivation campaigns</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA banner -->
+  <section id="cta-banner-section">
+    <div class="container">
+      <div class="cta-banner">
+        <h2 class="cta-title">Boost Your Shopify Store Sales Today</h2>
+        <p class="cta-desc">Integrate Inseller in less than 2 minutes. Syncs instantly with Shopify, no coding required.</p>
+        <a href="https://app.inseller.in" class="btn btn-primary">Start Your 14-Day Free Trial</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="wordmark">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 5V2" stroke="#FF6B2C" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="12" cy="2" r="1" fill="#FF6B2C"/>
+            <path d="M8 9V7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7V9" stroke="#FF6B2C" stroke-width="2" stroke-linecap="round"/>
+            <rect x="4" y="9" width="16" height="13" rx="3" fill="url(#footer-bag-gradient)"/>
+            <circle cx="9" cy="15" r="1" fill="#FFFFFF"/>
+            <circle cx="15" cy="15" r="1" fill="#FFFFFF"/>
+            <path d="M11 18H13" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"/>
+            <defs>
+              <linearGradient id="footer-bag-gradient" x1="4" y1="9" x2="20" y2="22" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#FF6B2C"/>
+                <stop offset="1" stop-color="#ff8d5c"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <span>Inseller</span>
+        </a>
+        <p class="footer-brand-desc">AI Sales Chat Widget for Shopify Stores</p>
+        <p class="footer-contact-info">
+          <span>Email: <a href="mailto:team@inseller.in">team@inseller.in</a></span><br>
+          <span>Phone: <a href="tel:+917547889854">+91 7547889854</a></span>
+        </p>
+      </div>
+      <div class="footer-links-col">
+        <h4>Product</h4>
+        <a href="index.html#features">Features</a>
+        <a href="index.html#demo">Demo</a>
+        <a href="index.html#pricing">Pricing</a>
+      </div>
+      <div class="footer-links-col">
+        <h4>Solutions</h4>
+        <a href="shopify-ai-sales-assistant.html">AI Sales Assistant</a>
+        <a href="shopify-customer-support-chatbot.html">Support Chatbot</a>
+        <a href="boost-shopify-conversion-rate.html">Boost Conversions</a>
+      </div>
+      <div class="footer-links-col">
+        <h4>Legal</h4>
+        <a href="terms.html">Terms of Service</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="refund.html">Refund Policy</a>
+        <a href="sitemap.html">Sitemap</a>
+      </div>
+      <div class="footer-links-col">
+        <h4>Socials</h4>
+        <div class="footer-socials">
+          <a href="https://linkedin.com/company/inseller-in/?viewAsMember=true" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="LinkedIn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-linkedin"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+          </a>
+          <a href="https://instagram.com/inseller_in" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Instagram">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-instagram"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <span>© 2026 Codewave Labs. All rights reserved. Inseller is a product of Codewave Labs.</span>
+      <span>Built for Shopify stores</span>
+    </div>
+  </footer>
+
+</body>
+</html>
